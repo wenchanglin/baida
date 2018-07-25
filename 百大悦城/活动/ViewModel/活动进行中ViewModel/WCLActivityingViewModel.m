@@ -23,15 +23,15 @@
     }
     return _cell_data_dict;
 }
--(RACSignal *)activityingDataSignal
+-(RACSignal *)activityingDataSignalWithtagId:(NSString*)tagId
 {
     RACReplaySubject * subject = [RACReplaySubject subject];
     [SVProgressHUD showWithStatus:@"加载中"];
     NSMutableDictionary * params = [NSMutableDictionary dictionary];
-    params[@"status"] = @"DOING";//进行中
-    params[@"organizeId"] =@"2";//[[NSUserDefaults standardUserDefaults]objectForKey:@"organizeId"];
+    params[@"signupState"] = @"DOING";//进行中
+    params[@"tagId"] = tagId;
     [[wclNetTool sharedTools]request:POST urlString:URL_ActivityList parameters:params finished:^(id responseObject, NSError *error) {
-        [SVProgressHUD dismissWithDelay:1];
+        [SVProgressHUD dismiss];
        if([responseObject[@"data"] count]>0)
        {
        NSArray*   bannerArr = [WCLActivityModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];

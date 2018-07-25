@@ -9,5 +9,6 @@
 #import "ViewController.h"
 
 @interface WCLActivityCalendarVC : ViewController
+@property(nonatomic,strong)NSString * stringID;
 
 @end

@@ -31,6 +31,7 @@ static NSInteger btnclick =0;
         _viewModel =(WCLJiFenViewModel*)viewModel;
         [self.jiFenVC.view addSubview:self.jiFenCollectionView];
         [self leftandrightUI];
+        btnclick =0;
         [self requestDataWithPage:page];
         
     }
@@ -44,41 +45,34 @@ static NSInteger btnclick =0;
     [[_backBtn rac_signalForControlEvents:UIControlEventTouchUpInside]subscribeNext:^(__kindof UIControl * _Nullable x) {
         STRONG
         btnclick +=1;
-        
+        self->page=1;
         if (btnclick==3) {
             btnclick =0;
             [self.backBtn setImage:[UIImage imageNamed:@"icon_btn_normal"] forState:UIControlStateNormal];
             [self.viewModel.mainArr removeAllObjects];
-            [[self.viewModel mainDataSignalSortType:@"" pageNum:1] subscribeNext:^(id  _Nullable x) {
-                STRONG
-                [self.jiFenCollectionView reloadData];
-            }];
+            [self requestDataWithPage:self->page];
 
         }
         else if(btnclick==1)
         {
             [self.backBtn setImage:[UIImage imageNamed:@"icon_btn_up"] forState:UIControlStateNormal];
             [self.viewModel.mainArr removeAllObjects];
-            [[self.viewModel mainDataSignalSortType:@"ASC" pageNum:1] subscribeNext:^(id  _Nullable x) {
-                STRONG
-                [self.jiFenCollectionView reloadData];
-            }];
+            [self requestDataWithClick:btnclick withPage:self->page];
+
 
         }
         else{
             [self.viewModel.mainArr removeAllObjects];
             [self.backBtn setImage:[UIImage imageNamed:@"icon_btn_down"] forState:UIControlStateNormal];
-            [[self.viewModel mainDataSignalSortType:@"DESC" pageNum:1] subscribeNext:^(id  _Nullable x) {
-                STRONG
-                [self.jiFenCollectionView reloadData];
-            }];
+            [self requestDataWithClick:btnclick withPage:self->page];
+
         }//2次
     }];
     [_backBtn setTitle:@"积分数" forState:UIControlStateNormal];
     [_backBtn setTitleEdgeInsets:UIEdgeInsetsMake(0, -_backBtn.imageView.bounds.size.width-3, 0, _backBtn.imageView.bounds.size.width)];
     [_backBtn setImageEdgeInsets:UIEdgeInsetsMake(0, _backBtn.titleLabel.bounds.size.width, 0, -_backBtn.titleLabel.bounds.size.width)];
-    _backBtn.titleLabel.font = [UIFont fontWithName:@"PingFangSC-Regular" size:16];
-    [_backBtn setTitleColor:[UIColor colorWithHexString:@"#990000"] forState:UIControlStateNormal];
+    _backBtn.titleLabel.font = [UIFont fontWithName:@"PingFangSC-Medium" size:12];
+    [_backBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [_backBtn setImage:[UIImage imageNamed:@"icon_btn_normal"] forState:UIControlStateNormal];
     UIBarButtonItem *barItem = [[UIBarButtonItem alloc] initWithCustomView:_backBtn];
     self.jiFenVC.navigationItem.rightBarButtonItem = barItem;
@@ -99,10 +93,93 @@ static NSInteger btnclick =0;
     WEAK
     [[self.viewModel mainDataSignalSortType:@"" pageNum:pagenum] subscribeNext:^(id  _Nullable x) {
         STRONG
-        [self.jiFenCollectionView.mj_footer endRefreshing];
-        [self.jiFenCollectionView.mj_header endRefreshing];
-        [self.jiFenCollectionView reloadData];
+        if(btnclick==1)
+        {
+            self->page=1;
+            [self requestDataWithClick:btnclick withPage:self->page];
+        }
+        else if(btnclick==2)
+        {
+            self->page=1;
+            [self requestDataWithClick:btnclick withPage:self->page];
+        }
+        else
+        {
+        NSInteger pages = [[x objectForKey:@"page"] integerValue];
+        if (pages>self->page) {
+            [YBLMethodTools footerRefreshWithTableView:self.jiFenCollectionView completion:^{
+                STRONG
+                self->page +=1;
+                [self requestDataWithPage:self->page];
+            }];
+            
+            [self.jiFenCollectionView.mj_header endRefreshing];
+            [self.jiFenCollectionView reloadData];
+            
+        }
+        else if(pages<=self->page)
+        {
+            self.jiFenCollectionView.mj_footer.hidden=YES;
+            [self.jiFenCollectionView.mj_header endRefreshing];
+            [self.jiFenCollectionView reloadData];
+            
+        }
+        }
     }];
+}
+-(void)requestDataWithClick:(NSInteger)click withPage:(NSInteger)page
+{
+    WEAK
+    if (click==1) {
+        [[self.viewModel mainDataSignalSortType:@"ASC" pageNum:self->page] subscribeNext:^(id  _Nullable x) {
+            NSInteger pages = [[x objectForKey:@"page"] integerValue];
+            if (pages>self->page) {
+                [YBLMethodTools footerRefreshWithTableView:self.jiFenCollectionView completion:^{
+                    STRONG
+                    self->page +=1;
+                    [self requestDataWithClick:click withPage:self->page];
+                }];
+                
+                [self.jiFenCollectionView.mj_header endRefreshing];
+                [self.jiFenCollectionView reloadData];
+                
+            }
+            else if(pages<=self->page)
+            {
+                self.jiFenCollectionView.mj_footer.hidden=YES;
+                [self.jiFenCollectionView.mj_header endRefreshing];
+
+                [self.jiFenCollectionView reloadData];
+                
+            }
+        }];
+  }
+    else if (click==2)
+    {
+        [[self.viewModel mainDataSignalSortType:@"DESC" pageNum:self->page] subscribeNext:^(id  _Nullable x) {
+            STRONG
+            NSInteger pages = [[x objectForKey:@"page"] integerValue];
+            if (pages>self->page) {
+                [YBLMethodTools footerRefreshWithTableView:self.jiFenCollectionView completion:^{
+                    STRONG
+                    self->page +=1;
+                    [self requestDataWithClick:click withPage:self->page];
+                }];
+                
+                [self.jiFenCollectionView.mj_header endRefreshing];
+                [self.jiFenCollectionView reloadData];
+                
+            }
+            else if(pages<=self->page)
+            {
+                self.jiFenCollectionView.mj_footer.hidden=YES;
+                [self.jiFenCollectionView.mj_header endRefreshing];
+
+                [self.jiFenCollectionView reloadData];
+                
+            }
+        }];
+    }
 }
 -(UICollectionView *)jiFenCollectionView
 {
@@ -111,13 +188,12 @@ static NSInteger btnclick =0;
         [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
         flowLayout.minimumLineSpacing = 0;
         //        flowLayout.headerReferenceSize = CGSizeMake(self.frame.size.width, 0);//头部
-        _jiFenCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(8, 0, SCREEN_WIDTH - 16,SCREEN_HEIGHT-88-5)
+        _jiFenCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(8, 0, SCREEN_WIDTH - 16,IsiPhoneX?SCREEN_HEIGHT-88:SCREEN_HEIGHT-64)
                                            collectionViewLayout:flowLayout];
         //设置代理
         _jiFenCollectionView.showsVerticalScrollIndicator = NO;
         _jiFenCollectionView.delegate = self;
         _jiFenCollectionView.dataSource = self;
-        
         [_jiFenCollectionView registerClass:[JiFenColletionCell class] forCellWithReuseIdentifier:@"JiFenColletionCell"];
         [_jiFenCollectionView setBackgroundColor:[UIColor whiteColor]];
         WEAK
@@ -145,40 +221,11 @@ static NSInteger btnclick =0;
             }
             else
             {
-//            [self.viewModel.mainArr removeAllObjects];
+            [self.viewModel.mainArr removeAllObjects];
             [self requestDataWithPage:self->page];
             }
         }];
-        [YBLMethodTools footerAutoRefreshWithTableView:_jiFenCollectionView completion:^{
-            STRONG;
-            self->page +=1;
-            if(btnclick==1)
-            {
-                [self.viewModel.mainArr removeAllObjects];
-                [[self.viewModel mainDataSignalSortType:@"ASC" pageNum:self->page] subscribeNext:^(id  _Nullable x) {
-                    STRONG
-                    [self.jiFenCollectionView.mj_footer endRefreshing];
-
-                    [self.jiFenCollectionView reloadData];
-                }];
-            }
-            else if(btnclick==2)
-            {
-                [self.viewModel.mainArr removeAllObjects];
-                [[self.viewModel mainDataSignalSortType:@"DESC" pageNum:self->page] subscribeNext:^(id  _Nullable x) {
-                    STRONG
-                    
-                    [self.jiFenCollectionView.mj_footer endRefreshing];
-                    [self.jiFenCollectionView reloadData];
-                }];
-            }
-            else
-            {
-//                [self.viewModel.mainArr removeAllObjects];
-                [self requestDataWithPage:self->page];
-
-            }
-        }];
+       
     }
     return _jiFenCollectionView;
 }
@@ -217,7 +264,7 @@ static NSInteger btnclick =0;
 {
     //边距占5*4=20 ，2个
     //图片为正方形，边长：(fDeviceWidth-20)/2-5-5 所以总高(fDeviceWidth-20)/2-5-5 +20+30+5+5 label高20 btn高30 边
-    return CGSizeMake(SCREEN_WIDTH / 2 - 8, 230);//CGSizeMake(169.5+16, 105+28);
+    return CGSizeMake(SCREEN_WIDTH / 2 - 8, 240);//CGSizeMake(169.5+16, 105+28);
 }
 //定义每个UICollectionView 的间距
 -(UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section

@@ -41,9 +41,12 @@
 -(void)requestData
 {
     [self.viewModel.mainDataSignal subscribeNext:^(id  _Nullable x) {
-        [self.leftTableView reloadData];
-        [self.leftTableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:YES scrollPosition:UITableViewScrollPositionTop];
-        [self.rightTableView reloadData];
+      if([x isKindOfClass:[NSDictionary class]])
+      {
+          [self.leftTableView reloadData];
+          [self.leftTableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:YES scrollPosition:UITableViewScrollPositionTop];
+          [self.rightTableView reloadData];
+      }
     }];
 }
 -(UITableView *)leftTableView
@@ -90,13 +93,14 @@
     if (self.leftTableView == tableView) {
         return [self.viewModel.cell_data_dict[@"左表"]count];
     } else {
-        return [self.viewModel.cell_data_dict[@"右表"]count];
+        
+        return [self.viewModel.cell_data_dict[@"右表"][section]count];
     }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.leftTableView) {
-        return 50;
+        return 40;
     } else {
         return 216;
     }
@@ -136,9 +140,9 @@
         leftCell.selectionStyle = UITableViewCellSelectionStyleNone;
         return leftCell;
     } else {
-        WCLShopSwitchListModel * models = self.viewModel.cell_data_dict[@"右表"][indexPath.row];
+        WCLShopSwitchListModel * models = self.viewModel.cell_data_dict[@"右表"][indexPath.section][indexPath.row];
         WCLShopSwitchRightCell * rightCell = [tableView dequeueReusableCellWithIdentifier:@"WCLShopSwitchRightCell"];
-        rightCell.backgroundColor = [UIColor colorWithHexString:@"#EDEDED"];
+        rightCell.backgroundColor = YBLColor(242,244,245,1);
         rightCell.selectionStyle = UITableViewCellSelectionStyleNone;
         rightCell.models= models;
         return rightCell;
@@ -181,7 +185,7 @@
     }
     else
     {
-    WCLShopSwitchListModel * models = self.viewModel.cell_data_dict[@"右表"][indexPath.row];
+    WCLShopSwitchListModel * models = self.viewModel.cell_data_dict[@"右表"][indexPath.section][indexPath.row];
     [[NSNotificationCenter defaultCenter]postNotificationName:@"changeCity" object:nil userInfo:@{@"key":models}];
     [self.shopSwitchVC.navigationController popViewControllerAnimated:YES];
     }

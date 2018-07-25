@@ -21,30 +21,33 @@ static NSString *const kWXUserModel   = @"bdWXUserModel";
 }
 
 - (BOOL)isLoginStatus{
-    
-    return self.userModel.authentication_token!=nil;
+    return self.userModel.memberPhone!=nil;
 }
-- (UserOpenedCreditType)userOpenedCreditType{
-    
-    UserOpenedCreditType uotp = UserOpenedCreditTypeNone;
-    if ([self.userInfoModel.credit isEqualToString:@"china"]) {
-        uotp = UserOpenedCreditTypeCredit;
-    } else if ([self.userInfoModel.credit isEqualToString:@"member"]){
-        uotp = UserOpenedCreditTypeMember;
-    }
-    return uotp;
-}
-
-- (OpenCreditType)openCreditType{
-    
-    OpenCreditType type_ = OpenCreditTypeCredit;
-    if (self.userType == UserTypeSeller) {
-        type_ = OpenCreditTypeCredit;
-    } else {
-        type_ = OpenCreditTypeMember;
-    }
-    return type_;
-}
+//-(NSString *)sex
+//{
+//    return _sex.length==0?self.userModel.memberSex:_sex;
+//}
+//- (UserOpenedCreditType)userOpenedCreditType{
+//    
+//    UserOpenedCreditType uotp = UserOpenedCreditTypeNone;
+//    if ([self.userInfoModel.credit isEqualToString:@"china"]) {
+//        uotp = UserOpenedCreditTypeCredit;
+//    } else if ([self.userInfoModel.credit isEqualToString:@"member"]){
+//        uotp = UserOpenedCreditTypeMember;
+//    }
+//    return uotp;
+//}
+//
+//- (OpenCreditType)openCreditType{
+//    
+//    OpenCreditType type_ = OpenCreditTypeCredit;
+//    if (self.userType == UserTypeSeller) {
+//        type_ = OpenCreditTypeCredit;
+//    } else {
+//        type_ = OpenCreditTypeMember;
+//    }
+//    return type_;
+//}
 
 //- (AasmState)aasmState{
 //    YBLUserInfoModel *userInfoModel = [YBLUserInfoModel readSingleModelForKey:kUserInfoModel];
@@ -61,19 +64,19 @@ static NSString *const kWXUserModel   = @"bdWXUserModel";
 //    return state;
 //}
 
-- (UserType)userType{
-    
-    WCLUserInfoModel *userInfoModel = [WCLUserInfoModel readSingleModelForKey:kUserInfoModel];
-    UserType usertype = UserTypeGuest;
-    if ([userInfoModel.user_type isEqualToString:user_type_guest_key]) {
-        usertype = UserTypeGuest;
-    } else if ([userInfoModel.user_type isEqualToString:user_type_buyer_key]) {
-        usertype = UserTypeBuyer;
-    } else if ([userInfoModel.user_type isEqualToString:user_type_seller_key]) {
-        usertype = UserTypeSeller;
-    }
-    return usertype;
-}
+//- (UserType)userType{
+//    
+//    WCLUserInfoModel *userInfoModel = [WCLUserInfoModel readSingleModelForKey:kUserInfoModel];
+//    UserType usertype = UserTypeGuest;
+//    if ([userInfoModel.user_type isEqualToString:user_type_guest_key]) {
+//        usertype = UserTypeGuest;
+//    } else if ([userInfoModel.user_type isEqualToString:user_type_buyer_key]) {
+//        usertype = UserTypeBuyer;
+//    } else if ([userInfoModel.user_type isEqualToString:user_type_seller_key]) {
+//        usertype = UserTypeSeller;
+//    }
+//    return usertype;
+//}
 
 //- (void)setWxUserModel:(WXUserModel *)wxUserModel{
 //
@@ -88,32 +91,45 @@ static NSString *const kWXUserModel   = @"bdWXUserModel";
 //}
 
 - (void)setUserModel:(WCLUserModel *)userModel{
-    
-    [WCLUserModel saveSingleModel:userModel forKey:kUserModel];
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:userModel];
+    [userDefaults setObject:data forKey:kUserModel];
+    [userDefaults synchronize];
+
 }
 
 - (WCLUserModel *)userModel{
-    
-    WCLUserModel *userModel = [WCLUserModel readSingleModelForKey:kUserModel];
-    //    userModel.authentication_token = TToken;
+    NSData *data = [[NSUserDefaults standardUserDefaults] objectForKey:kUserModel];
+    WCLUserModel * userModel = [NSKeyedUnarchiver unarchiveObjectWithData:data];
     return userModel;
 }
 - (void)setUserInfoModel:(WCLUserInfoModel *)userInfoModel{
     
-    [WCLUserInfoModel saveSingleModel:userInfoModel forKey:kUserInfoModel];
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:userInfoModel];
+    [userDefaults setObject:data forKey:kUserInfoModel];
+    [userDefaults synchronize];
 }
 
 - (WCLUserInfoModel *)userInfoModel{
-    
-    WCLUserInfoModel *userInfo = [WCLUserInfoModel readSingleModelForKey:kUserInfoModel];
-    return userInfo;
-    
+
+    NSData *data = [[NSUserDefaults standardUserDefaults] objectForKey:kUserInfoModel];
+    WCLUserInfoModel * userInfoModel = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+    return userInfoModel;
+
 }
 + (void)logout{
     
     [WCLUserManageCenter shareInstance].userModel = nil;
-    [WCLUserManageCenter shareInstance].userInfoModel = nil;
+    [WCLUserManageCenter shareInstance].isLoginStatus=NO;
+    [WCLUserManageCenter shareInstance].userInfoModel=nil;
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kUserModel];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kUserInfoModel];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"token"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"hash"];
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"replyhash" object:nil];
     //    [YBLUserManageCenter shareInstance].wxUserModel = nil;
-    [WCLUserManageCenter shareInstance].cartsCount = 0;
+//    [WCLUserManageCenter shareInstance].cartsCount = 0;
 }
+
 @end

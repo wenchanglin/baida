@@ -10,9 +10,8 @@
 
 @interface WCLMineViewModel : NSObject
 /**登录*/
-@property (nonatomic, strong) RACSignal           *loginSignal;
+//@property (nonatomic, strong) RACSignal           *loginSignal;
 
-//@property(nonatomic,strong)RACSignal * 
 @property (nonatomic, strong) NSMutableDictionary *cell_data_dict;
 
 @end

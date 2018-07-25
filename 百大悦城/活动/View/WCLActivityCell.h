@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "TJPTagVIew.h"
 #import "WCLActivityModel.h"
+typedef void(^joinActivityBlock)(WCLActivityModel*model);
+typedef void(^signupActivityBlock)(WCLActivityModel*model);
+
 @interface WCLActivityCell : UITableViewCell
 @property(nonatomic,strong)UIImageView * sfbackImgeView;
 @property(nonatomic,strong)UILabel * nameLabel;
@@ -17,4 +20,8 @@
 @property(nonatomic,strong)UIButton * applyBtn;
 @property(nonatomic,strong)TJPTagVIew* tagView;
 @property(nonatomic,strong)WCLActivityModel * models;
+@property(nonatomic,strong)joinActivityBlock blocks;
+@property(nonatomic,strong)signupActivityBlock  signblocks;
+@property(nonatomic,strong)NSString*string1;
+
 @end

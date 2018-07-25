@@ -7,7 +7,9 @@
 //
 
 #import "WCLBaseService.h"
-
+#import "DropDownMenuList.h"
 @interface WCLFindShopService : WCLBaseService
 @property(nonatomic,strong)UITableView * findShopTableView;
+@property(nonatomic,strong)DropDownMenuList* dropMenu;
+
 @end

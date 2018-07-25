@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "WCLShopSwitchListModel.h"
+#import "WCLShopSwitchModel.h"
 #import "WCLFindShopModel.h"
 @interface WCLShopDetailOneCell : UITableViewCell
 @property(nonatomic,strong)UIImageView * backImageView;
@@ -15,6 +15,7 @@
 @property(nonatomic,strong)UILabel * titleNameLabel;
 @property(nonatomic,strong)UILabel * yetaiLabel;
 @property(nonatomic,strong)UILabel * addressLabel;
+@property(nonatomic,strong)UILabel*dianpuLabels;
 @property(nonatomic,strong)UILabel * introLabel;
 @property(nonatomic,strong)WCLShopSwitchListModel * model1;
 @property(nonatomic,strong)WCLFindShopModel * model2;

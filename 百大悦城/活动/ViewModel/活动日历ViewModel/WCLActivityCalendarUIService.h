@@ -7,8 +7,6 @@
 //
 
 #import "WCLBaseService.h"
-#import "LTSCalendarManager.h"
 @interface WCLActivityCalendarUIService : WCLBaseService
-@property (nonatomic,strong)LTSCalendarManager *manager;
 
 @end

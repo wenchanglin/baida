@@ -29,7 +29,7 @@ dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC)),
 #define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
 
 #define IS_IPHONE_6PLUS (IS_IPHONE && [[UIScreen mainScreen] nativeScale] == 3.0f)
-
+#define IS_iPhone_5 ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(640, 1136), [[UIScreen mainScreen] currentMode].size) : NO)
 #define pi 3.14159265359
 ///度数
 #define DEGREES_TO_RADIANS(degress) ((pi * degress)/180)
@@ -45,7 +45,7 @@ dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC)),
 #define SCREEN_SCALE ((double)[ UIScreen mainScreen ].bounds.size.width/320)
 
 #define SCREEN_SCALE_Iphone6 ((double)[ UIScreen mainScreen ].bounds.size.width/375)
-
+#define changtiaoplaceHolder [UIImage imageNamed:@"icon_big_placeholder"]
 //主题色
 #define YBLThemeColor           YBLThemeColorAlp(1)
 
@@ -88,7 +88,7 @@ dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC)),
 #define IsiPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
 
 #define YBLColor(r, g, b, a) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:(a)]
-
+#define Description -(NSString *)description{NSMutableDictionary * dictionry = [NSMutableDictionary dictionary];uint count;objc_property_t *propertys = class_copyPropertyList([self class], &count);for (int i=0; i<count; i++) {objc_property_t preperty = propertys[i];NSString *name = @(property_getName(preperty));id value = [self valueForKey:name]?:@"nil";[dictionry setObject:value forKey:name];}free(propertys);return [NSString stringWithFormat:@"<%@: %p>-- %@",[self class],self,dictionry];}
 #define BlackTextColor YBLColor(40,40,40,1)
 
 #define YBLFont(font) [UIFont systemFontOfSize:(font)]

@@ -30,7 +30,7 @@
     [self.contentView addSubview:_placeImageView];
     [_placeImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.backImageView.mas_top).offset(35);
-        make.left.equalTo(self.backImageView.mas_left).offset(25);
+        make.left.equalTo(self.backImageView.mas_left).offset(10);
 //        make.height.width.mas_equalTo(30);
     }];
     _cnNameLabel = [UILabel new];
@@ -38,9 +38,8 @@
     _cnNameLabel.font = [UIFont fontWithName:@"SFProDisplay-Medium" size:15];
     [self.contentView addSubview:_cnNameLabel];
     [_cnNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.placeImageView.mas_right).offset(10);
+        make.left.equalTo(self.placeImageView.mas_right).offset(5);
         make.top.equalTo(self.backImageView.mas_top).offset(31);
-        make.height.mas_equalTo(21);
     }];
     _engnameLabel = [UILabel new];
     _engnameLabel.textColor = [UIColor colorWithHexString:@"#194F82"];
@@ -49,7 +48,6 @@
     [_engnameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.cnNameLabel);
         make.top.equalTo(self.cnNameLabel.mas_bottom).offset(2);
-        make.height.mas_equalTo(14);
     }];
     _decLabel = [UILabel new];
     _decLabel.textAlignment = NSTextAlignmentCenter;

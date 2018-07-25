@@ -9,5 +9,11 @@
 #import "WCLShopSwitchModel.h"
 
 @implementation WCLShopSwitchModel
++(NSDictionary *)mj_objectClassInArray
+{
+    return @{@"organizeList":@"WCLShopSwitchListModel"};
+}
+@end
+@implementation WCLShopSwitchListModel
 
 @end

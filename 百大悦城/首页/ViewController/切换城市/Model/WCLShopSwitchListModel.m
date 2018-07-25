@@ -8,6 +8,4 @@
 
 #import "WCLShopSwitchListModel.h"
 
-@implementation WCLShopSwitchListModel
 
-@end

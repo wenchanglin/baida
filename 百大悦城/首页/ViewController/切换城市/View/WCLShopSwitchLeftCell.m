@@ -19,15 +19,18 @@
 -(void)createUI{
    
     self.yellowView = [UIView new];
-    self.yellowView.layer.cornerRadius=8;
+    self.yellowView.layer.cornerRadius=15;
     self.yellowView.layer.masksToBounds = YES;
-    self.yellowView.backgroundColor = [UIColor colorWithHexString:@"#990000"];
+    UIColor *topleftColor = [UIColor colorWithHexString:@"#C90000"];
+    UIColor *bottomrightColor = [UIColor colorWithHexString:@"#990000"];
+    UIImage *bgImg = [UIImage gradientColorImageFromColors:@[topleftColor, bottomrightColor] gradientType:GradientTypeLeftToRight imgSize:CGSizeMake(80, 30)];
+    self.yellowView.backgroundColor = [UIColor colorWithPatternImage:bgImg];
     [self.contentView addSubview:self.yellowView];
     [self.yellowView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(11);
         make.left.mas_equalTo(10);
         make.right.mas_equalTo(-10);
-        make.height.mas_equalTo(29);
+        make.height.mas_equalTo(30);
     }];
     _leftBtn = [UILabel new];
     self.leftBtn.highlightedTextColor = [UIColor whiteColor];

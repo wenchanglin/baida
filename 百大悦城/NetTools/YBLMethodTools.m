@@ -2,8 +2,8 @@
 //  YBLMethodTools.m
 //  YBL365
 //
-//  Created by 乔同新 on 2016/12/17.
-//  Copyright © 2016年 乔同新. All rights reserved.
+//  Created by wcl on 2016/12/17.
+//  Copyright © 2016年 wcl. All rights reserved.
 //
 
 #import "YBLMethodTools.h"
@@ -11,11 +11,11 @@
 //#import "YBLFoundTabBarViewController.h"
 //#import "YBLAddressAreaModel.h"
 //#import "YBLCompanyTypePricesParaModel.h"
-//#import "YBLLoginViewController.h"
+#import "WCLLoginViewController.h"
 //#import "YBLNavigationViewController.h"
 //#import "YBLpurchaseInfosModel.h"
 //#import "YBLGetProductShippPricesModel.h"
-//#import "YBLWebViewController.h"
+#import "WCLWebViewController.h"
 //#import "YBLTakeOrderParaItemModel.h"
 //#import "YYImageCache.h"
 //#import "YYWebImage.h"
@@ -73,255 +73,6 @@ static NSMutableArray *_buyer_orderManager;
 @implementation YBLMethodTools
 
 + (void)initialize{
-   
-#pragma mark 大B订单  ===>>从右到左依次排列顺序
-    _seller_orderManager = [NSMutableArray array];
-    [_seller_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"wait_approve"
-                                                                               Count:@[
-                                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"wait_approve"
-                                                                                                          order_action:@"start_approve"
-                                                                                                    order_button_title:begainApproveString],
-                                                                                      //拒绝订单
-                                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"wait_approve"
-                                                                                                          order_action:@"refuse"
-                                                                                                    order_button_title:refundOrderString]
-                                                                                      ]
-                                                                       purchaseCount:@[
-                                                                                       [YBLOrderPropertyItemModel getItemModelWithOrderState:@"wait_approve"
-                                                                                                                                order_action:key_purchase_request_cancel
-                                                                                                                          order_button_title:cancleOrderString]
-                                                                                       ]]];
-    [_seller_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"approving"
-                                                              Count:@[
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"approving"
-                                                                                          order_action:@"approve"
-                                                                                    order_button_title:approveDoneString]
-                                                                      ]
-                                                                       purchaseCount:@[
-                                                                                       [YBLOrderPropertyItemModel getItemModelWithOrderState:@"wait_approve"
-                                                                                                                                order_action:key_purchase_request_cancel
-                                                                                                                          order_button_title:cancleOrderString]
-                                                                                       ]]];
-    [_seller_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"complete"
-                                                              Count:@[
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"complete"
-                                                                                          order_action:@"start_pick"
-                                                                                    order_button_title:begainPickString]
-                                                                      ]
-                                                                       purchaseCount:@[
-                                                                                       [YBLOrderPropertyItemModel getItemModelWithOrderState:@"wait_approve"
-                                                                                                                                order_action:key_purchase_request_cancel
-                                                                                                                          order_button_title:cancleOrderString]
-                                                                                       ]]];
-    [_seller_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"ready"
-                                                              Count:@[
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"ready"
-                                                                                          order_action:@"start_pick"
-                                                                                    order_button_title:begainPickString]
-                                                                      ]
-                                                                       purchaseCount:@[
-                                                                                       [YBLOrderPropertyItemModel getItemModelWithOrderState:@"wait_approve"
-                                                                                                                                order_action:key_purchase_request_cancel
-                                                                                                                          order_button_title:cancleOrderString]
-                                                                                       ]]];
-    [_seller_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"picking"
-                                                              Count:@[
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"picking"
-                                                                                          order_action:@"pick"
-                                                                                    order_button_title:pickDoneString]
-                                                                      ]
-                                                                       purchaseCount:@[
-                                                                                       [YBLOrderPropertyItemModel getItemModelWithOrderState:@"wait_approve"
-                                                                                                                                order_action:key_purchase_request_cancel
-                                                                                                                          order_button_title:cancleOrderString]
-                                                                                       ]]];
-    
-    [_seller_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"wait_ship"
-                                                              Count:@[
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"wait_ship"
-                                                                                          order_action:@"start_ship"
-                                                                                    order_button_title:begainShipString],
-                                                                      ]
-                                                                       purchaseCount:@[
-                                                                                       [YBLOrderPropertyItemModel getItemModelWithOrderState:@"wait_approve"
-                                                                                                                                order_action:key_purchase_request_cancel
-                                                                                                                          order_button_title:cancleOrderString]
-                                                                                       ]]];
-    //
-    [_seller_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"shipping"
-                                                              Count:@[
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"shipping"
-                                                                                          order_action:@"shipped"
-                                                                                    order_button_title:shipDoneString],
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"shipping"
-                                                                                          order_action:@"delay_ship"
-                                                                                    order_button_title:delayShipString]
-                                                                      ]
-                                                                       purchaseCount:@[
-                                                                                       [YBLOrderPropertyItemModel getItemModelWithOrderState:@"shipping"
-                                                                                                                                order_action:key_purchase_request_cancel
-                                                                                                                          order_button_title:cancleOrderString]
-                                                                                       ]]];
-    [_seller_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"wait_pick_up"
-                                                              Count:@[
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"wait_pick_up"
-                                                                                          order_action:@"pick_up"
-                                                                                    order_button_title:pickUpDoneString]
-                                                                      ]
-                                                                       purchaseCount:@[
-                                                                                       [YBLOrderPropertyItemModel getItemModelWithOrderState:@"wait_approve"
-                                                                                                                                order_action:key_purchase_request_cancel
-                                                                                                                          order_button_title:cancleOrderString]
-                                                                                       ]]];
-    [_seller_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"full_complete"
-                                                              Count:@[
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"full_complete"
-                                                                                          order_action:nil
-                                                                                    order_button_title:deleteOrderString]
-                                                                      ]
-                                                                       purchaseCount:nil]];
-    [_seller_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"wait_cancel"
-                                                              Count:@[
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"wait_cancel"
-                                                                                          order_action:@"accept_cancel"
-                                                                                    order_button_title:agreeCancelString]
-                                                                      ]
-                                                                       purchaseCount:nil]];
-    [_seller_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"canceled"
-                                                              Count:@[
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"canceled"
-                                                                                          order_action:nil
-                                                                                    order_button_title:deleteOrderString]
-                                                                      ]
-                                                                       purchaseCount:@[]]];
-    
-    [_seller_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"wlzt_shipping"
-                                                              Count:@[]
-                                                                       purchaseCount:@[
-                                                                                       [YBLOrderPropertyItemModel getItemModelWithOrderState:@"wait_approve"
-                                                                                                                                order_action:key_purchase_request_cancel
-                                                                                                                          order_button_title:cancleOrderString]
-                                                                                       ]]];
-    
-    /**
-     *  采购订单申请取消
-     */
-    [_seller_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"purchase_wait_cancel"
-                                                              Count:@[                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"purchase_wait_cancel"
-                                                                                                                                                                order_action:@"purchase_process_cancel"
-                                                                                                                                                          order_button_title:IAgreeString],
-                                                                                                                                            [YBLOrderPropertyItemModel getItemModelWithOrderState:@"purchase_wait_cancel"
-                                                                                                                                                                order_action:@"purchase_process_cancel"
-                                                                                                                                                          order_button_title:IDisAgreeString],                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"purchase_wait_cancel"
-                                                                                                                                                                                                                                                                                          order_action:@"purchase_process_cancel"
-                                                                                                                                                                                                                                                                                    order_button_title:IAlsoAgreeCancelString]]
-                                                                       purchaseCount:nil]];
-
-    
-#pragma mark 小B订单
-    _buyer_orderManager = [NSMutableArray array];
-    NSArray *keyArr = @[@"wait_approve",@"approving",@"complete",@"ready",@"picking",@"wait_ship"];
-    for (NSString *keyString in keyArr) {
-        [_buyer_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:keyString
-                                                                 Count:@[
-                                                                         [YBLOrderPropertyItemModel getItemModelWithOrderState:keyString
-                                                                                             order_action:@"request_cancel"
-                                                                                       order_button_title:cancleOrderString]
-                                                                         ]
-                                                                          purchaseCount:@[
-                                                                                          [YBLOrderPropertyItemModel getItemModelWithOrderState:keyString
-                                                                                                                                   order_action:key_purchase_request_cancel
-                                                                                                                             order_button_title:cancleOrderString]
-                                                                                          ]]];
-    }
-    [_buyer_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"canceled"
-                                                             Count:@[
-                                                                     [YBLOrderPropertyItemModel getItemModelWithOrderState:@"canceled"
-                                                                                         order_action:nil
-                                                                                   order_button_title:buyAgainString]
-                                                                     ]
-                                                                      purchaseCount:@[
-                                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"canceled"
-                                                                                                                               order_action:nil
-                                                                                                                         order_button_title:deleteOrderString]
-                                                                                      ]]];
-    //确认收货
-    /*
-     小b:当物流方式是(shipping) code:物流自提,有延迟提货按钮
-     */
-    [_buyer_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"shipping"
-                                                              Count:@[//确认收货
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"shipping"
-                                                                                          order_action:@"receive_shipped"
-                                                                                    order_button_title:sureShouhuoString],
-                                                                      ]
-                                                                      purchaseCount:@[
-                                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"shipping"
-                                                                                                                               order_action:key_purchase_request_cancel
-                                                                                                                         order_button_title:cancleOrderString]
-                                                                                      ]]];
-    [_buyer_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"wlzt_shipping"
-                                                             Count:@[//确认收货
-                                                                     [YBLOrderPropertyItemModel getItemModelWithOrderState:@"shipping"
-                                                                                         order_action:@"receive_shipped"
-                                                                                   order_button_title:sureShouhuoString],
-                                                                     //延迟提货
-                                                                     [YBLOrderPropertyItemModel getItemModelWithOrderState:@"shipping"
-                                                                                         order_action:@"delay_receive_shipped"
-                                                                                   order_button_title:yanchiTihuoString],
-                                                                     ]
-                                                                      purchaseCount:@[
-                                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"shipping"
-                                                                                                                               order_action:key_purchase_request_cancel
-                                                                                                                         order_button_title:cancleOrderString]
-                                                                                      ]]];
-    [_buyer_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"full_complete"
-                                                              Count:@[//
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"full_complete"
-                                                                                          order_action:nil
-                                                                                    order_button_title:buyAgainString]
-                                                                      ]
-                                                                      purchaseCount:nil]];
-    [_buyer_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"wait_pick_up"
-                                                              Count:@[
-                                                                      //确认提货
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"wait_pick_up"
-                                                                                          order_action:@"customer_pick_up"
-                                                                                    order_button_title:sureTihuoString],
-                                                                      //延迟提货
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"wait_pick_up"
-                                                                                          order_action:@"delay_pick_up"
-                                                                                    order_button_title:yanchiTihuoString],
-                                                                      //取消订单
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"wait_pick_up"
-                                                                                          order_action:@"request_cancel"
-                                                                                    order_button_title:cancleOrderString]
-                                                                      ]
-                                                                      purchaseCount:nil]];
-    //payment_state
-    [_buyer_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"checkout"
-                                                              Count:@[
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"checkout"
-                                                                                          order_action:nil
-                                                                                    order_button_title:goPayString],
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"checkout"
-                                                                                          order_action:@"request_cancel"
-                                                                                    order_button_title:cancleOrderString]
-                                                                      ]
-                                                                      purchaseCount:nil]];
-    [_buyer_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"balance_due"
-                                                              Count:@[
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"balance_due"
-                                                                                          order_action:nil
-                                                                                    order_button_title:goPayString],
-                                                                      [YBLOrderPropertyItemModel getItemModelWithOrderState:@"balance_due"
-                                                                                          order_action:@"request_cancel"
-                                                                                    order_button_title:cancleOrderString]
-                                                                      ]
-                                                                      purchaseCount:nil]];
-    [_buyer_orderManager addObject:[YBLOrderPropertyModel getPropertyModelWithState:@"purchase_wait_cancel"
-                                                                              Count:@[]
-                                                                      purchaseCount:nil]];
 }
 
 + (void) popAnimationWithView:(UIView*)aView{
@@ -900,43 +651,31 @@ static NSMutableArray *_buyer_orderManager;
 }
 
 + (void)headerRefreshWithTableView:(id )view completion:(void (^)(void))completion{
-    /*
-    MJRefreshNormalHeader *headerR = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+  
+    MJRefreshNormalHeader *headerView = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
         completion();
     }];
-    if ([view isKindOfClass:[UITableView class]]) {
-        UITableView *tableview = (UITableView *)view;
-        tableview.mj_header = headerR;
-    } else if ([view isKindOfClass:[UICollectionView class]]){
-        UICollectionView *tableview = (UICollectionView *)view;
-        tableview.mj_header = headerR;
-    }
-    */
-    MJRefreshGifHeader *headerView = [MJRefreshGifHeader headerWithRefreshingBlock:^{
-        completion();
-    }];
-    headerView.lastUpdatedTimeLabel.hidden= YES;//如果不隐藏这个会默认 图片在最左边不是在中间
-    NSString *title = @"\n让采购更便捷";;
-    NSString *stateString1 = [NSString stringWithFormat:@"%@\n下拉更新...",title];
-    NSString *stateString2 = [NSString stringWithFormat:@"%@\n松开更新...",title];
-    NSString *stateString3 = [NSString stringWithFormat:@"%@\n更新中...",title];
-    [headerView setTitle:stateString1 forState:MJRefreshStateIdle];
-    [headerView setTitle:stateString2 forState:MJRefreshStatePulling];
-    [headerView setTitle:stateString3 forState:MJRefreshStateRefreshing];
-    
-    // 设置即将刷新状态的动画图片（一松开就会刷新的状态）
-    NSMutableArray *refreshingImages = [NSMutableArray array];
-    for (int i = 1; i <= 9; i++) {
-        UIImage *image = [UIImage imageNamed:[NSString stringWithFormat:@"YCRefreshTableHeader%d", i]];
-        if (image != nil) {
-            [refreshingImages addObject:image];
-        }
-    }
-    [headerView setImages:refreshingImages forState:MJRefreshStateIdle];
-    
-    [headerView setImages:refreshingImages forState:MJRefreshStatePulling];
-    // 设置正在刷新状态的动画图片
-    [headerView setImages:refreshingImages forState:MJRefreshStateRefreshing];
+//    NSString *title = @"\n让采购更便捷";;
+//    NSString *stateString1 = [NSString stringWithFormat:@"%@\n下拉更新...",title];
+//    NSString *stateString2 = [NSString stringWithFormat:@"%@\n松开更新...",title];
+//    NSString *stateString3 = [NSString stringWithFormat:@"%@\n更新中...",title];
+//    [headerView setTitle:stateString1 forState:MJRefreshStateIdle];
+//    [headerView setTitle:stateString2 forState:MJRefreshStatePulling];
+//    [headerView setTitle:stateString3 forState:MJRefreshStateRefreshing];
+//
+//    // 设置即将刷新状态的动画图片（一松开就会刷新的状态）
+//    NSMutableArray *refreshingImages = [NSMutableArray array];
+//    for (int i = 1; i <= 9; i++) {
+//        UIImage *image = [UIImage imageNamed:[NSString stringWithFormat:@"YCRefreshTableHeader%d", i]];
+//        if (image != nil) {
+//            [refreshingImages addObject:image];
+//        }
+//    }
+//    [headerView setImages:refreshingImages forState:MJRefreshStateIdle];
+//
+//    [headerView setImages:refreshingImages forState:MJRefreshStatePulling];
+//    // 设置正在刷新状态的动画图片
+//    [headerView setImages:refreshingImages forState:MJRefreshStateRefreshing];
     
     if ([view isKindOfClass:[UITableView class]]) {
         UITableView *tableview = (UITableView *)view;
@@ -962,35 +701,11 @@ static NSMutableArray *_buyer_orderManager;
 
     }
 }
-
-+ (void)footerAutoRefreshWithTableView:(id )view completion:(void (^)(void))completion{
-    
-    MJRefreshAutoGifFooter *footerR = [MJRefreshAutoGifFooter footerWithRefreshingBlock:^{
++ (void)footerNormalRefreshWithTableView:(id )view completion:(void (^)(void))completion
+{
+    MJRefreshBackNormalFooter *footerR = [MJRefreshBackNormalFooter footerWithRefreshingBlock:^{
         completion();
     }];
-  
-    NSString *title = @"\n让采购更便捷";
-    NSString *stateString1 = [NSString stringWithFormat:@"%@\n下拉更新...",title];
-    NSString *stateString2 = [NSString stringWithFormat:@"%@\n松开更新...",title];
-    NSString *stateString3 = [NSString stringWithFormat:@"%@\n更新中...",title];
-    [footerR setTitle:stateString1 forState:MJRefreshStateIdle];
-    [footerR setTitle:stateString2 forState:MJRefreshStatePulling];
-    [footerR setTitle:stateString3 forState:MJRefreshStateRefreshing];
-    
-    // 设置即将刷新状态的动画图片（一松开就会刷新的状态）
-    NSMutableArray *refreshingImages = [NSMutableArray array];
-    for (int i = 1; i <= 9; i++) {
-        UIImage *image = [UIImage imageNamed:[NSString stringWithFormat:@"YCRefreshTableHeader%d", i]];
-        if (image != nil) {
-            [refreshingImages addObject:image];
-        }
-    }
-    [footerR setImages:refreshingImages forState:MJRefreshStateIdle];
-    
-    [footerR setImages:refreshingImages forState:MJRefreshStatePulling];
-    // 设置正在刷新状态的动画图片
-    [footerR setImages:refreshingImages forState:MJRefreshStateRefreshing];
-    footerR.triggerAutomaticallyRefreshPercent = 0;
     if ([view isKindOfClass:[UITableView class]]) {
         UITableView *tableview = (UITableView *)view;
         tableview.mj_footer = footerR;
@@ -999,6 +714,42 @@ static NSMutableArray *_buyer_orderManager;
         tableview.mj_footer = footerR;
         
     }
+}
++ (void)footerAutoRefreshWithTableView:(id )view completion:(void (^)(void))completion{
+    
+    MJRefreshAutoNormalFooter *footerR = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+        completion();
+    }];
+    if ([view isKindOfClass:[UITableView class]]) {
+        UITableView *tableview = (UITableView *)view;
+        tableview.mj_footer = footerR;
+    } else if ([view isKindOfClass:[UICollectionView class]]){
+        UICollectionView *tableview = (UICollectionView *)view;
+        tableview.mj_footer = footerR;
+        
+    }
+//    NSString *title = @"\n让采购更便捷";
+//    NSString *stateString1 = [NSString stringWithFormat:@"%@\n下拉更新...",title];
+//    NSString *stateString2 = [NSString stringWithFormat:@"%@\n松开更新...",title];
+//    NSString *stateString3 = [NSString stringWithFormat:@"%@\n更新中...",title];
+//    [footerR setTitle:stateString1 forState:MJRefreshStateIdle];
+//    [footerR setTitle:stateString2 forState:MJRefreshStatePulling];
+//    [footerR setTitle:stateString3 forState:MJRefreshStateRefreshing];
+//
+//    // 设置即将刷新状态的动画图片（一松开就会刷新的状态）
+//    NSMutableArray *refreshingImages = [NSMutableArray array];
+//    for (int i = 1; i <= 9; i++) {
+//        UIImage *image = [UIImage imageNamed:[NSString stringWithFormat:@"YCRefreshTableHeader%d", i]];
+//        if (image != nil) {
+//            [refreshingImages addObject:image];
+//        }
+//    }
+//    [footerR setImages:refreshingImages forState:MJRefreshStateIdle];
+//
+//    [footerR setImages:refreshingImages forState:MJRefreshStatePulling];
+//    // 设置正在刷新状态的动画图片
+//    [footerR setImages:refreshingImages forState:MJRefreshStateRefreshing];
+   
 }
 
 
@@ -1027,12 +778,7 @@ static NSMutableArray *_buyer_orderManager;
     return 0;
     
 }
-+ (int)getBaozhengJINWithCount:(NSInteger)count Price:(float)price
-{
-    float baojin = count*price*percent_purchase;
-    
-    return (int)ceil(baojin);
-}
+
 
 + (void)dismissViewControllerToRoot:(UIViewController *)Vc{
     
@@ -1096,233 +842,6 @@ static NSMutableArray *_buyer_orderManager;
     button.frame = CGRectMake(0, 0, 40, 40);
     button.highlighted = NO;
     return  button;
-}
-
-#pragma mark - purchase order status type title color
-
-+ (NSString *)getPurchaseOrderStatusButtonTitleWithAasmState:(NSString *)aasm_state{
-    return [YBLMethodTools getPurchaseOrderTypeOrTitleWithAasmState:aasm_state xxx:3];
-}
-
-+ (UIColor *)getPurchaseOrderStatusBGColorWithAasmState:(NSString *)aasm_state{
-    return [YBLMethodTools getPurchaseOrderTypeOrTitleWithAasmState:aasm_state xxx:2];
-}
-
-+ (NSString *)getPurchaseOrderStatusTitleWithAasmState:(NSString *)aasm_state{
-    return [YBLMethodTools getPurchaseOrderTypeOrTitleWithAasmState:aasm_state xxx:1];
-}
-
-+ (PurchaseOrderType)getPurchaseOrderTypeWithAasmState:(NSString *)aasm_state{
-    return [[YBLMethodTools getPurchaseOrderTypeOrTitleWithAasmState:aasm_state xxx:0] unsignedIntegerValue];
-}
-
-
-+ (id)getPurchaseOrderTypeOrTitleWithAasmState:(NSString *)aasm_state xxx:(NSInteger)xxx{
-   
-    id undefineValue;
-    //0
-    PurchaseOrderType type = PurchaseOrderTypePurchaseing;
-    //1
-    NSString *title = @"默认状态";
-    //2
-    UIColor *bgColor = YBLThemeColor;
-    //3
-    NSString *buttonTitle = @"默认状态";
-    
-    if ([aasm_state isEqualToString:@"purchaseing"]) {
-        //采购中的订单
-        type = PurchaseOrderTypePurchaseing;
-        title = @"进行中";
-        bgColor = YBLThemeColor;
-        buttonTitle = cancleOrderString;
-    } else if ([aasm_state isEqualToString:@"bidded"]) {
-        //已选择中标者的订单
-        type = PurchaseOrderTypeBidded;
-        title = @"订单中";
-        bgColor = YBLColor(3, 175, 22, 1);
-        buttonTitle = purchase_order_button_lookOrderString;
-    } else if ([aasm_state isEqualToString:@"cancel"]) {
-        // 已取消的订单
-        type = PurchaseOrderTypeCancle;
-        title = @"已取消";
-        bgColor = YBLColor(200, 200, 200, 1);
-        buttonTitle = @"";
-    } else if ([aasm_state isEqualToString:@"full_complete"]) {
-        //完成
-        type = PurchaseOrderTypeFullComplete;
-        title = @"已完成";
-        bgColor = YBLColor(200, 200, 200, 1);
-        buttonTitle = @"";
-    } else if ([aasm_state isEqualToString:@"unbond"]) {
-        //未缴纳押金的订单
-        type = PurchaseOrderTypeUnbond;
-        title = @"待发布";
-        bgColor = YBLThemeColor;
-        buttonTitle = deleteOrderString;
-    } else if ([aasm_state isEqualToString:@"choice_bu_unselected"]) {
-        //设置自选但是订单发布时间结束后未选择
-        type = PurchaseOrderTypeChoiceBuUnselected;
-        title = @"系统自选";
-        bgColor = YBLThemeColor;
-        buttonTitle = @"";
-    } else if ([aasm_state isEqualToString:@"no_bid"]) {
-        //流拍的订单
-        type = PurchaseOrderTypeNoBid;
-        title = @"流拍订单";
-        bgColor = YBLThemeColor;
-        buttonTitle = @"";
-    }
-    if (xxx == 0) {
-        undefineValue = @(type);
-    } else if (xxx == 1) {
-        undefineValue = (NSString *)title;
-    } else if (xxx == 2) {
-        undefineValue = (UIColor *)bgColor;
-    } else if (xxx == 3) {
-        undefineValue = (NSString *)buttonTitle;
-    }
-    return undefineValue;
-}
-
-#pragma mark - order type title action
-
-+ (NSString *)getOrderTypeButtonTitleWithState:(NSString *)state{
-    
-    return [YBLMethodTools getOrderTypeUndefineValueWithState:state xxx:1];
-}
-
-+ (NSString *)getOrderTypeTitleWithState:(NSString *)state{
-    
-    return [YBLMethodTools getOrderTypeUndefineValueWithState:state xxx:0];
-}
-
-+ (NSString *)getOrderButtonAction:(NSString *)currentTitle{
-    
-    NSString *buttonAction = nil;
-    if ([currentTitle isEqualToString:begainPickString]) {
-        
-        buttonAction = begainPickActionString;
-        
-    } else if ([currentTitle isEqualToString:begainApproveString]) {
-        
-        buttonAction = begainApproveActionString;
-
-    } else if ([currentTitle isEqualToString:approveDoneString]) {
-        
-        buttonAction = approveDoneActionString;
-        
-    } else if ([currentTitle isEqualToString:pickUpDoneString]) {
-        
-        buttonAction = pickUpDoneActionString;
-        
-    } else if ([currentTitle isEqualToString:pickDoneString]) {
-        
-        buttonAction = pickDoneActionString;
-        
-    } else if ([currentTitle isEqualToString:begainShipString]) {
-        
-        buttonAction = begainShipActionString;
-        
-    } else if ([currentTitle isEqualToString:shipDoneString]) {
-        
-        buttonAction = shipDoneActionString;
-        
-    } else if ([currentTitle isEqualToString:agreeCancelString]){
-        
-        buttonAction = acceptCancelActionString;
-    }
-
-    return buttonAction;
-}
-
-+ (id)getOrderTypeUndefineValueWithState:(NSString *)state xxx:(NSInteger)xxx{
-    
-    id undefineValue;
-    NSString *title = @"默认状态";
-    NSString *buttonTitle = @"默认状态";
-    
-    if ([state isEqualToString:@"balance_due"]) {
-        title = @"未付清";
-    } else if ([state isEqualToString:@"credit_owed"]) {
-        title = @"超额支付";
-    } else if ([state isEqualToString:@"failed"]) {
-        title = @"支付失败";
-    } else if ([state isEqualToString:@"paid"]) {
-        title = @"已支付";
-    } else if ([state isEqualToString:@"void"]) {
-        title = @"订单取消";
-    } else if ([state isEqualToString:@"checkout"]) {
-        title = @"待支付";
-    } else if ([state isEqualToString:@"processing"]) {
-        title = @"正在处理支付";
-    } else if ([state isEqualToString:@"pending"]) {
-        title = @"挂起等待处理";
-    } else if ([state isEqualToString:@"invalid"]) {
-        title = @"支付无效";
-    } else if ([state isEqualToString:@"backorder"]) {
-        title = @"已付款待配送";
-    } else if ([state isEqualToString:@"canceled"]) {
-        title = @"已取消";
-        buttonTitle = deleteOrderString;
-    } else if ([state isEqualToString:@"partial"]) {
-        title = @"部分发货";
-    } else if ([state isEqualToString:@"pending"]) {
-        title = @"未付款";
-    } else if ([state isEqualToString:@"ready"]) {
-        title = @"已核单";
-        buttonTitle = begainPickString;
-    } else if ([state isEqualToString:@"complete"]) {
-        title = @"已核弹";
-        buttonTitle = begainPickString;
-    }  else if ([state isEqualToString:@"wait_approve"]) {
-        title = @"待核单";
-        buttonTitle = begainApproveString;
-    } else if ([state isEqualToString:@"wait_cancel"]) {
-        title = @"取消中";
-        buttonTitle = agreeCancelString;
-        
-    }else if ([state isEqualToString:@"approving"]) {
-        title = @"核单中";
-        buttonTitle = approveDoneString;
-        
-    } else if ([state isEqualToString:@"wait_pick_up"]) {
-        title = @"等待自提";
-        buttonTitle = pickUpDoneString;
-        
-    } else if ([state isEqualToString:@"shipped"]) {
-        title = @"物流配送完成";
-    } else if ([state isEqualToString:@"picking"]) {
-        title = @"拣货中";
-        buttonTitle = pickDoneString;
-        
-    } else if ([state isEqualToString:@"wait_ship"]) {
-        title = @"等待配送";
-        buttonTitle = begainShipString;
-        
-    } else if ([state isEqualToString:@"shipping"]) {
-        title = @"配送中";
-        buttonTitle = shipDoneString;
-        
-    } else if ([state isEqualToString:@"full_complete"]) {
-        title = @"已完成";
-        buttonTitle = fullDoneString;
-    }
-
-    if (xxx == 0) {
-        
-        undefineValue = (NSString *)title;
-        
-    } else if (xxx == 1) {
-        
-        undefineValue = (NSString *)buttonTitle;
-        
-    } else if (xxx == 2) {
-        
-        
-        
-    }
-    
-    return undefineValue;
 }
 
 + (NSString *)getCharactersWithRoleName:(NSString *)roleName{
@@ -1560,32 +1079,28 @@ static NSMutableArray *_buyer_orderManager;
     return version;
 }
 
-+ (void)OpenURL:(NSURL *)url{
-    
-    if ([[UIApplication sharedApplication] canOpenURL:url]) {
-        [[UIApplication sharedApplication] openURL:url];
-    } else {
-        if ([url isEqual:[NSURL URLWithString:sharedApplication_App_WIFI]]) {
-            url = [NSURL URLWithString:sharedApplication_WIFI];
-        }
-        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
-    }
-}
+
 
 #pragma mark --判断手机号合法性
 + (BOOL)checkPhone:(NSString *)phoneNumber{
     
-    NSString *regex = @"^((13[0-9])|(147)|(15[^4,\\D])|(18[0-9])|(17[0-9]))\\d{8}$";
-    
-    NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
-    
-    BOOL isMatch = [pred evaluateWithObject:phoneNumber];
-    
-    if (!isMatch){
-        
+    /**
+     * 手机号码
+     * 移动：134 135 136 137 138 139 147 150 151 152 157 158 159 178 182 183 184 187 188 198
+     * 联通：130 131 132 145 155 156 166 171 175 176 185 186
+     * 电信：133 149 153 173 177 180 181 189 199
+     * 虚拟运营商: 170
+     */
+    NSString *target = @"^(0|86|17951)?(13[0-9]|15[012356789]|16[6]|19[89]]|17[01345678]|18[0-9]|14[579])[0-9]{8}$";
+    NSPredicate *targetPredicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", target];
+    if ([targetPredicate evaluateWithObject:phoneNumber])
+    {
+        return YES;
+    }
+    else
+    {
         return NO;
     }
-    return YES;
 }
 #pragma mark 判断邮箱
 + (BOOL)checkEmail:(NSString *)email{
@@ -1599,7 +1114,16 @@ static NSMutableArray *_buyer_orderManager;
     return [emailTest evaluateWithObject:email];
     
 }
-
++(NSString *)formatFloat:(float)f
+{
+    if (fmodf(f, 1)==0) {//如果有一位小数点
+        return [NSString stringWithFormat:@"%.0f",f];
+    } else if (fmodf(f*10, 1)==0) {//如果有两位小数点
+        return [NSString stringWithFormat:@"%.1f",f];
+    } else {
+        return [NSString stringWithFormat:@"%.2f",f];
+    }
+}
 + (BOOL)checkIsChinese:(NSString *)string
 {
     for (int i=0; i<string.length; i++)
@@ -1635,66 +1159,12 @@ static NSMutableArray *_buyer_orderManager;
     //返回最近结果
     return pinyin;
 }
-//正则判断手机号码格式
-+ (BOOL)validatePhone:(NSString *)phone
-{
-    /**
-     * 手机号码
-     * 移动：134[0-8],135,136,137,138,139,150,151,157,158,159,182,187,188
-     * 联通：130,131,132,152,155,156,185,186
-     * 电信：133,1349,153,180,189
-     */
-    NSString * MOBILE = @"^1(3[0-9]|5[0-35-9]|8[025-9])\\d{8}$";
-    /**
-     10         * 中国移动：China Mobile
-     11         * 134[0-8],135,136,137,138,139,150,151,157,158,159,182,187,188
-     12         */
-    NSString * CM = @"^1(34[0-8]|(3[5-9]|5[017-9]|8[278])\\d)\\d{7}$";
-    /**
-     15         * 中国联通：China Unicom
-     16         * 130,131,132,152,155,156,185,186
-     17         */
-    NSString * CU = @"^1(3[0-2]|5[256]|8[56])\\d{8}$";
-    /**
-     20         * 中国电信：China Telecom
-     21         * 133,1349,153,180,189
-     22         */
-    NSString * CT = @"^1((33|53|8[09])[0-9]|349)\\d{7}$";
-    /**
-     25         * 大陆地区固话及小灵通
-     26         * 区号：010,020,021,022,023,024,025,027,028,029
-     27         * 号码：七位或八位
-     28         */
-    // NSString * PHS = @"^0(10|2[0-5789]|\\d{3})\\d{7,8}$";
-    
-    NSPredicate *regextestmobile = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", MOBILE];
-    NSPredicate *regextestcm = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", CM];
-    NSPredicate *regextestcu = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", CU];
-    NSPredicate *regextestct = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", CT];
-    
-    if (([regextestmobile evaluateWithObject:phone] == YES)
-        || ([regextestcm evaluateWithObject:phone] == YES)
-        || ([regextestct evaluateWithObject:phone] == YES)
-        || ([regextestcu evaluateWithObject:phone] == YES))
-    {
-        if([regextestcm evaluateWithObject:phone] == YES) {
-            NSLog(@"China Mobile");
-        } else if([regextestct evaluateWithObject:phone] == YES) {
-            NSLog(@"China Telecom");
-        } else if ([regextestcu evaluateWithObject:phone] == YES) {
-            NSLog(@"China Unicom");
-        } else {
-            NSLog(@"Unknow");
-        }
-        
-        return YES;
-    }
-    else
-    {
-        return NO;
-    }
-}
 
++(CGRect)jisuanTextHeightForString:(NSString *)string withWidth:(CGFloat)width withFont:(UIFont *)font
+{
+    CGRect titleBounds = [string boundingRectWithSize:CGSizeMake(SCREEN_WIDTH-24, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:font} context:nil];
+    return titleBounds;
+}
 /*
  [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=APPID"]];
  
@@ -1860,17 +1330,30 @@ static NSMutableArray *_buyer_orderManager;
 //    return [self getAppendingStringWithArray:array appendingKey:key ttype:appending_key];
 //}
 //
-//+ (BOOL)checkLoginWithVc:(UIViewController *)Vc{
-//    BOOL isLogin = [YBLUserManageCenter shareInstance].isLoginStatus;
-//    if (!isLogin) {
-//        YBLLoginViewController *loginVC = [[YBLLoginViewController alloc] init];
-//        YBLNavigationViewController *nav = [[YBLNavigationViewController alloc] initWithRootViewController:loginVC];
-//        [Vc presentViewController:nav animated:YES completion:^{
-//
-//        }];
-//    }
-//    return isLogin;
-//}
+/*
+ *  判断用户输入的密码是否符合规范，符合规范的密码要求：
+ 1. 长度大于6位
+ 2. 密码中必须同时包含数字和字母
+ */
++(BOOL)judgePassWordLegal:(NSString *)pass{
+    BOOL result = false;
+    if ([pass length] >= 6){
+        // 判断长度大于6位后再接着判断是否同时包含数字和字符
+        NSString * regex = @"^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$";
+        NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
+        result = [pred evaluateWithObject:pass];
+    }
+    return result;
+}
++ (BOOL)checkLoginWithVc:(UIViewController *)Vc{
+    BOOL isLogin = [WCLUserManageCenter shareInstance].isLoginStatus;
+    if (!isLogin) {
+        WCLLoginViewController *loginVC = [[WCLLoginViewController alloc] init];
+        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:loginVC];
+        [Vc presentViewController:nav animated:YES completion:nil];
+    }
+    return isLogin;
+}
 
 + (int)getRandomNumber:(int)from to:(int)to
 {
@@ -1902,12 +1385,23 @@ static NSMutableArray *_buyer_orderManager;
     return att_joinRecordString;
 }
 
-+ (void)pushWebVcFrom:(UIViewController *)Vc URL:(NSString *)URL title:(NSString *)title{
++ (void)pushWebVcFrom:(UIViewController *)Vc URL:(NSString *)URL title:(NSString *)title string:(NSString*)string type:(NSString*)type buystate:(NSString*)state activityid:(NSNumber*)huodongid{
     
-//    YBLWebViewController *webVc = [YBLWebViewController new];
-//    webVc.url = URL;
-//    webVc.navTitle = title;
-//    [Vc.navigationController pushViewController:webVc animated:YES];
+    WCLWebViewController *webVc = [WCLWebViewController new];
+    webVc.url = URL;
+    webVc.navTitle = title;
+    webVc.strings =string;
+    webVc.type =type;
+    webVc.buyStates = state;
+    webVc.huodongid =huodongid;
+    webVc.hidesBottomBarWhenPushed =YES;
+    if ([type isEqualToString:@"人气单品详情"]) {
+        [Vc presentViewController:webVc animated:NO completion:nil];
+    }
+    else
+    {
+        [Vc.navigationController pushViewController:webVc animated:YES];
+    }
 }
 
 + (NSString *)replaceNYRDataStringWith:(NSString *)dataString{
@@ -1918,7 +1412,7 @@ static NSMutableArray *_buyer_orderManager;
             dataString = [dataString stringByReplacingOccurrencesOfString:title withString:@"-"];
         }
     }
-    dataString = [dataString substringToIndex:dataString.length-1];
+    dataString = [dataString substringToIndex:dataString.length];
 
     return dataString;
 }
@@ -1934,6 +1428,57 @@ static NSMutableArray *_buyer_orderManager;
 
 + (NSMutableArray *)getRowAppendingIndexPathsWithIndex:(NSInteger)index_from appendingCount:(NSInteger)appendingCount inSection:(NSInteger)inSection{
     return [self getRowAppendingIndexPathsWithIndex:index_from appendingCount:appendingCount inSection:inSection isApenddingSection:NO];
+}
+/**
+ *  通过 CAShapeLayer 方式绘制虚线
+ *
+ *  param lineView:       需要绘制成虚线的view
+ *  param lineLength:     虚线的宽度
+ *  param lineSpacing:    虚线的间距
+ *  param lineColor:      虚线的颜色
+ *  param lineDirection   虚线的方向  YES 为水平方向， NO 为垂直方向
+ **/
++(void)drawLineOfDashByCAShapeLayer:(UIView *)lineView lineLength:(int)lineLength lineSpacing:(int)lineSpacing lineColor:(UIColor *)lineColor lineDirection:(BOOL)isHorizonal {
+    
+    CAShapeLayer *shapeLayer = [CAShapeLayer layer];
+    
+    [shapeLayer setBounds:lineView.bounds];
+    
+    if (isHorizonal) {
+        
+        [shapeLayer setPosition:CGPointMake(CGRectGetWidth(lineView.frame) / 2, CGRectGetHeight(lineView.frame))];
+        
+    } else{
+        [shapeLayer setPosition:CGPointMake(CGRectGetWidth(lineView.frame) / 2, CGRectGetHeight(lineView.frame)/2)];
+    }
+    
+    [shapeLayer setFillColor:[UIColor clearColor].CGColor];
+    //  设置虚线颜色为blackColor
+    [shapeLayer setStrokeColor:lineColor.CGColor];
+    //  设置虚线宽度
+    if (isHorizonal) {
+        [shapeLayer setLineWidth:CGRectGetHeight(lineView.frame)];
+    } else {
+        
+        [shapeLayer setLineWidth:CGRectGetWidth(lineView.frame)];
+    }
+    [shapeLayer setLineJoin:kCALineJoinRound];
+    //  设置线宽，线间距
+    [shapeLayer setLineDashPattern:[NSArray arrayWithObjects:[NSNumber numberWithInt:lineLength], [NSNumber numberWithInt:lineSpacing], nil]];
+    //  设置路径
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathMoveToPoint(path, NULL, 0, 0);
+    
+    if (isHorizonal) {
+        CGPathAddLineToPoint(path, NULL,CGRectGetWidth(lineView.frame), 0);
+    } else {
+        CGPathAddLineToPoint(path, NULL, 0, CGRectGetHeight(lineView.frame));
+    }
+    
+    [shapeLayer setPath:path];
+    CGPathRelease(path);
+    //  把绘制好的虚线添加上来
+    [lineView.layer addSublayer:shapeLayer];
 }
 
 + (NSMutableArray *)getRowAppendingIndexPathsWithIndex:(NSInteger)index_from appendingCount:(NSInteger)appendingCount inSection:(NSInteger)inSection isApenddingSection:(BOOL)isApenddingSection{
@@ -1961,9 +1506,6 @@ static NSMutableArray *_buyer_orderManager;
     return url;
 }
 
-+ (BOOL)isSatisfyPrestrainDataWithAllcount:(NSInteger)allCount currentRow:(NSInteger)currentRow{
-    return  (currentRow == allCount - PrestrainLessCount && currentRow >= PrestrainLessCount);
-}
 
 // QRCode
 + (UIImage *)generateQRCodeWithInputMessage:(NSString *)inputMessage
@@ -2022,47 +1564,7 @@ static NSMutableArray *_buyer_orderManager;
     UIImage *returnImage = [UIImage imageWithCIImage:ciImage];
     return returnImage;
 }
-/*
- //iOS8之后
- [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
- //如果App没有添加权限，显示的是设定界面。如果App有添加权限（例如通知），显示的是App的设定界面。
- 可选值如下：
- About — prefs:root=General&path=About
- Accessibility — prefs:root=General&path=ACCESSIBILITY
- Airplane Mode On — prefs:root=AIRPLANE_MODE
- Auto-Lock — prefs:root=General&path=AUTOLOCK
- Brightness — prefs:root=Brightness
- Bluetooth — prefs:root=General&path=Bluetooth
- Date & Time — prefs:root=General&path=DATE_AND_TIME
- FaceTime — prefs:root=FACETIME
- General — prefs:root=General
- Keyboard — prefs:root=General&path=Keyboard
- iCloud — prefs:root=CASTLE
- iCloud Storage & Backup — prefs:root=CASTLE&path=STORAGE_AND_BACKUP
- International — prefs:root=General&path=INTERNATIONAL
- Location Services — prefs:root=LOCATION_SERVICES
- Music — prefs:root=MUSIC
- Music Equalizer — prefs:root=MUSIC&path=EQ
- Music Volume Limit — prefs:root=MUSIC&path=VolumeLimit
- Network — prefs:root=General&path=Network
- Nike + iPod — prefs:root=NIKE_PLUS_IPOD
- Notes — prefs:root=NOTES
- Notification — prefs:root=NOTIFICATI*****_ID
- Phone — prefs:root=Phone
- Photos — prefs:root=Photos
- Profile — prefs:root=General&path=ManagedConfigurationList
- Reset — prefs:root=General&path=Reset
- Safari — prefs:root=Safari
- Siri — prefs:root=General&path=Assistant
- Sounds — prefs:root=Sounds
- Software Update — prefs:root=General&path=SOFTWARE_UPDATE_LINK
- Store — prefs:root=STORE
- Twitter — prefs:root=TWITTER
- Usage — prefs:root=General&path=USAGE
- VPN — prefs:root=General&path=Network/VPN
- Wallpaper — prefs:root=Wallpaper
- Wi-Fi — prefs:root=WIFI
- */
+
 
 + (YBLButton *)getImageTextButtonWithText:(NSString *)text buttonSize:(CGSize)buttonSize{
     
@@ -2133,36 +1635,115 @@ static NSMutableArray *_buyer_orderManager;
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     pasteboard.string = copyString;
 }
++ (NSString *)formateDate:(NSString *)dateString withFormate:(NSString *) formate
+{
+    @try {
+        
+        //实例化一个NSDateFormatter对象
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:formate];
+        
+        NSDate * nowDate = [NSDate date];
+        
+        //  将需要转换的时间转换成 NSDate 对象
+        NSDate * needFormatDate = [dateFormatter dateFromString:dateString];
+        //  取当前时间和转换时间两个日期对象的时间间隔
+        //  这里的NSTimeInterval 并不是对象，是基本型，其实是double类型，是由c定义的:  typedef double NSTimeInterval;
+        NSTimeInterval time = [nowDate timeIntervalSinceDate:needFormatDate];
+        // 再然后，把间隔的秒数折算成天数和小时数：
+        NSString *dateStr = @"";
+        if (time < 0) {
+            if (time >= -60*60*24) {
+                dateStr = @"明天";
+                [dateFormatter setDateFormat:@"YYYY/MM/dd"];
+                NSString * need_yMd = [dateFormatter stringFromDate:needFormatDate];
+                NSString *now_yMd = [dateFormatter stringFromDate:nowDate];
+                
+                [dateFormatter setDateFormat:@"HH:mm"];
+                if ([need_yMd isEqualToString:now_yMd]) {
+                    //在同一天
+                    dateStr = [NSString stringWithFormat:@"今天 %@",[dateFormatter stringFromDate:needFormatDate]];
+                }else{
+                    //明天天
+                    dateStr = [NSString stringWithFormat:@"明天 %@",[dateFormatter stringFromDate:needFormatDate]];
+                }
+            }else{
+                [dateFormatter setDateFormat:@"yyyy"];
+                NSString * yearStr = [dateFormatter stringFromDate:needFormatDate];
+                NSString *nowYear = [dateFormatter stringFromDate:nowDate];
+                
+                if ([yearStr isEqualToString:nowYear]) {
+                    ////  在同一年
+                    [dateFormatter setDateFormat:@"MM月dd日"];
+                    dateStr = [dateFormatter stringFromDate:needFormatDate];
+                }else{
+                    [dateFormatter setDateFormat:@"yyyy/MM/dd"];
+                    dateStr = [dateFormatter stringFromDate:needFormatDate];
+                }
+            }
+        }
+        else if (time<=60) {  //// 1分钟以内的
+            dateStr = @"刚刚";
+        }else if(time<=60*60){  ////  一个小时以内的
+            
+            int mins = time/60;
+            dateStr = [NSString stringWithFormat:@"%d分钟前",mins];
+            
+        }else if(time<=60*60*24){   //// 在两天内的
+            
+            [dateFormatter setDateFormat:@"YYYY/MM/dd"];
+            NSString * need_yMd = [dateFormatter stringFromDate:needFormatDate];
+            NSString *now_yMd = [dateFormatter stringFromDate:nowDate];
+            
+            [dateFormatter setDateFormat:@"HH:mm"];
+            if ([need_yMd isEqualToString:now_yMd]) {
+                //// 在同一天
+                dateStr = [NSString stringWithFormat:@"今天 %@",[dateFormatter stringFromDate:needFormatDate]];
+            }else{
+                ////  昨天
+                dateStr = [NSString stringWithFormat:@"昨天 %@",[dateFormatter stringFromDate:needFormatDate]];
+            }
+        }else {
+            
+            [dateFormatter setDateFormat:@"yyyy"];
+            NSString * yearStr = [dateFormatter stringFromDate:needFormatDate];
+            NSString *nowYear = [dateFormatter stringFromDate:nowDate];
+            
+            if ([yearStr isEqualToString:nowYear]) {
+                ////  在同一年
+                [dateFormatter setDateFormat:@"MM月dd日"];
+                dateStr = [dateFormatter stringFromDate:needFormatDate];
+            }else{
+                [dateFormatter setDateFormat:@"yyyy/MM/dd"];
+                dateStr = [dateFormatter stringFromDate:needFormatDate];
+            }
+        }
+        
+        return dateStr;
+        
+        
+    } @catch (NSException *exception) {
+        return @"";
+    }
+}
 
-//+ (void)handleAdsModel:(YBLAdsModel *)adsModel Vc:(UIViewController *)Vc{
-//
-//    if (adsModel.linkto.length<1) {
-//        return;
-//    }
-//    
-//    if ([adsModel.linkto_type isEqualToString:@"shop"]) {
-//        
-//        NSString *shop_id = adsModel.linkto;
-//        YBLStoreViewModel *viewModel = [YBLStoreViewModel new];
-//        viewModel.shopid = shop_id;
-//        YBLStoreViewController * storeVC = [[YBLStoreViewController alloc]init];
-//        storeVC.viewModel = viewModel;
-//        [Vc.navigationController pushViewController:storeVC animated:YES];
-//        
-//    } else if ([adsModel.linkto_type isEqualToString:@"product"]){
-//
-//        YBLGoodsDetailViewModel *viewModel = [[YBLGoodsDetailViewModel alloc] init];
-//        viewModel.goodID = adsModel.linkto;
-//        YBLGoodsDetailViewController *goodDetailVC = [[YBLGoodsDetailViewController alloc] initWithType:GoodsDetailTypeDefault];
-//        goodDetailVC.viewModel = viewModel;
-//        [Vc.navigationController pushViewController:goodDetailVC animated:YES];
-//
-//    } else if ([adsModel.linkto_type isEqualToString:@"url"]){
-//        
-//        [self pushWebVcFrom:Vc URL:adsModel.linkto title:nil];
-//    }
-//    
-//}
+#pragma mark - 将某个时间转化成 时间戳
+
++(NSInteger)timeSwitchTimestamp:(NSString *)formatTime andFormatter:(NSString *)format{
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateStyle:NSDateFormatterMediumStyle];
+    [formatter setTimeStyle:NSDateFormatterShortStyle];
+    [formatter setDateFormat:format]; //(@"YYYY-MM-dd hh:mm:ss") ----------设置你想要的格式,hh与HH的区别:分别表示12小时制,24小时制
+    NSTimeZone* timeZone = [NSTimeZone timeZoneWithName:@"Asia/Beijing"];
+    [formatter setTimeZone:timeZone];
+    NSDate* date = [formatter dateFromString:formatTime]; //------------将字符串按formatter转成nsdate
+    //时间转时间戳的方法:
+    
+    NSInteger timeSp = [[NSNumber numberWithDouble:[date timeIntervalSince1970]] integerValue]*1000;
+    NSLog(@"将某个时间转化成 时间戳&&&&&&&timeSp:%ld",(long)timeSp); //时间戳的值
+    return timeSp;
+    
+}
 
 //判断是否为整形：
 

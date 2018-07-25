@@ -8,7 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "WCLHomeGiftModel.h"
+typedef void(^giftdidSelctBlock)(NSInteger index);
+
 @interface WCLHomeGiftCell : UITableViewCell<UICollectionViewDelegate,UICollectionViewDataSource>
 @property(nonatomic,strong)NSMutableArray *giftModelArray;
 @property (nonatomic,strong) NSMutableArray *giftArr;
+@property(nonatomic,copy)giftdidSelctBlock giftSelectBlock;
+
 @end

@@ -1,6 +1,9 @@
-platform:ios,'10.0'
+platform:ios,'9.0'
 target '百大悦城' do
 #pod 'UITableView+FDTemplateLayoutCell'
+pod 'GetuiSDK-NoIDFA', '~> 1.6.2.0'
+pod 'DZNEmptyDataSet'
+pod 'XHWebImageAutoSize','~>1.1.0'
 pod 'SDAutoLayout','~>2.1.3'
 pod 'ReactiveObjC'
 pod 'AFNetworking'

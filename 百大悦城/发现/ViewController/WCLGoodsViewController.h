@@ -9,5 +9,5 @@
 #import "ViewController.h"
 
 @interface WCLGoodsViewController : ViewController
-
+@property(nonatomic,strong)UIViewController * VC;
 @end

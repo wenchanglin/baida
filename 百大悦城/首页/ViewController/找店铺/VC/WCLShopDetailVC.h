@@ -10,5 +10,6 @@
 
 @interface WCLShopDetailVC : ViewController
 @property(nonatomic,assign)NSInteger  shopid;
-@property(nonatomic,strong)NSString * industryName;
+@property(nonatomic,strong)NSString * floorName;
+@property(nonatomic,strong)NSString*yetaiStr;
 @end

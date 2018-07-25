@@ -17,9 +17,9 @@
         [_positionImage mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.equalTo(self.contentView).offset(20);
             make.left.mas_equalTo(22);
-            make.height.width.mas_equalTo(60);
+            make.height.width.mas_equalTo(40);
         }];
-        [_positionImage.layer setCornerRadius:30];
+        [_positionImage.layer setCornerRadius:20];
         [_positionImage.layer setMasksToBounds:YES];
         
         _nameLabel = [[UILabel alloc] init];

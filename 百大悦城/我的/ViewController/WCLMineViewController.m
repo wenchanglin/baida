@@ -12,6 +12,11 @@
 #import "WCLMineViewController.h"
 #import "WCLMineViewModel.h"
 #import "WCLMineUIService.h"
+#import "WCLMineActivityViewController.h"
+#import "WCLMemberCodeVC.h"
+#import "WCLTicketViewController.h"
+#import "WCLMineExchangeViewController.h"
+#import "WCLMineOrderViewController.h"
 @interface WCLMineViewController ()
 @property (nonatomic, strong) WCLMineUIService *MineUIService;//首页UI 服务
 @property (nonatomic, strong) WCLMineViewModel *viewModel;//首页UI 服务
@@ -20,23 +25,65 @@
 @implementation WCLMineViewController
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:false];
     [self.navigationController setNavigationBarHidden:NO animated:animated];
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:false];
+    [self.navigationController setNavigationBarHidden:YES animated:animated];
     [self.MineUIService requestUserInfoData];
 
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"我的";
+    self.viewModel = [[WCLMineViewModel alloc]init];
     self.MineUIService = [[WCLMineUIService alloc]initWithVC:self ViewModel:self.viewModel];
+    WEAK
     [self.MineUIService setSixBtnBlock:^(NSInteger index) {
-        WCLLog(@"%@",@(index));
+        STRONG
+        if ([YBLMethodTools checkLoginWithVc:self] ) {
+        switch (index) {
+            case 0:
+            {
+                WCLMemberCodeVC * cvc = [[WCLMemberCodeVC alloc]init];
+                cvc.hidesBottomBarWhenPushed =YES;
+                [self.navigationController pushViewController:cvc animated:YES];
+            }
+                break;
+            case 1:
+            {
+                WCLTicketViewController * tvc =[[WCLTicketViewController alloc]init];
+                tvc.hidesBottomBarWhenPushed =YES;
+                [self.navigationController pushViewController:tvc animated:YES];
+            }break;
+            case 2:
+            {
+                WCLMineOrderViewController *ovC = [[WCLMineOrderViewController alloc]init];
+                ovC.hidesBottomBarWhenPushed=YES;
+                [self.navigationController pushViewController:ovC animated:YES];
+            }
+                break;
+            case 3:
+            {
+                WCLMineExchangeViewController *tvc = [[WCLMineExchangeViewController alloc]init];
+                tvc.hidesBottomBarWhenPushed=YES;
+                [self.navigationController pushViewController:tvc animated:YES];
+            }break;
+            case 4:
+                {
+                    WCLMineActivityViewController * avc =[[WCLMineActivityViewController alloc]init];
+                    avc.hidesBottomBarWhenPushed =YES;
+                    [self.navigationController pushViewController:avc animated:YES];
+                }
+                break;
+            case 5:
+            {}break;
+            default:
+                break;
+            }
+        }
     }];
 }
 

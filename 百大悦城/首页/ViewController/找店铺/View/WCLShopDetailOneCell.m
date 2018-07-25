@@ -16,14 +16,20 @@
     return self;
 }
 -(void)createUI{
+   
     UIView * views = [UIView new];
-    views.backgroundColor = [UIColor colorWithHexString:@"#E0BE8D"];
+    UIColor *topleftColor = [UIColor colorWithHexString:@"#FFE9C0"];
+    UIColor *bottomrightColor = [UIColor colorWithHexString:@"#E0BE8D"];
+    UIImage *bgImg = [UIImage gradientColorImageFromColors:@[topleftColor, bottomrightColor] gradientType:GradientTypeLeftToRight imgSize:CGSizeMake(SCREEN_WIDTH, 197.5)];
+    views.backgroundColor = [UIColor colorWithPatternImage:bgImg];
     [self.contentView addSubview:views];
     [views mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.right.mas_equalTo(0);
         make.height.mas_equalTo(197.5);
     }];
     _backImageView = [UIImageView new];
+    _backImageView.layer.cornerRadius=5;
+    _backImageView.layer.masksToBounds=YES;
     [views addSubview:_backImageView];
     [_backImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(10);
@@ -46,14 +52,16 @@
     [_titleNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.iconImageView.mas_right).offset(20);
         make.top.equalTo(views.mas_bottom).offset(18);
-        make.right.mas_equalTo(-40);
     }];
     _yetaiLabel = [UILabel new];
+    _yetaiLabel.backgroundColor = [UIColor blackColor];
     _yetaiLabel.font= [UIFont systemFontOfSize:12];
-    _yetaiLabel.textColor = [UIColor blackColor];
+    _yetaiLabel.layer.cornerRadius=5;
+    _yetaiLabel.layer.masksToBounds=YES;
+    _yetaiLabel.textColor = [UIColor colorWithHexString:@"#E4C995"];
     [self.contentView addSubview:_yetaiLabel];
     [_yetaiLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.titleNameLabel);
+        make.centerY.equalTo(self.titleNameLabel.mas_centerY);
         make.left.equalTo(self.titleNameLabel.mas_right).offset(8);
     }];
     UIImageView * smallView = [UIImageView new];
@@ -86,11 +94,13 @@
     dianpuLabel.text = @"店铺简介";
     dianpuLabel.font = [UIFont fontWithName:@"PingFangSC-Medium" size:15];
     [self.contentView addSubview:dianpuLabel];
+    _dianpuLabels = dianpuLabel;
     [dianpuLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(fengeView.mas_bottom).offset(10);
         make.left.mas_equalTo(15);
     }];
     _introLabel = [UILabel new];
+    _introLabel.numberOfLines=0;
     _introLabel.font = [UIFont fontWithName:@"PingFangSC-Regular" size:14];
     _introLabel.textColor = [UIColor colorWithHexString:@"#957E5E"];
     [self.contentView addSubview:_introLabel];
@@ -98,17 +108,20 @@
         make.left.equalTo(dianpuLabel);
         make.top.equalTo(dianpuLabel.mas_bottom).offset(6);
         make.right.mas_equalTo(-15);
+        make.bottom.mas_equalTo(-10);
     }];
+
 }
 -(void)shopDetailMallModel:(WCLShopSwitchListModel *)models withShopModel:(WCLFindShopModel *)model
 {
     _model1=models;
     _model2=model;
-    [_backImageView sd_setImageWithURL:[NSURL URLWithString:models.organizePicturePath]];
-    [_iconImageView sd_setImageWithURL:[NSURL URLWithString:model.shopLogo]];
+//    WCLLog(@"%@",model);
+    [_backImageView sd_setImageWithURL:[NSURL URLWithString:model.shopPicture.length>0?model.shopPicture:models.organizePicturePath] placeholderImage:[UIImage imageNamed:@"icon_big_placeholder"]];
+    [_iconImageView sd_setImageWithURL:[NSURL URLWithString:model.shopLogo] placeholderImage:HeadPlaceHolder];
     _titleNameLabel.text = model.shopName;
-    _addressLabel.text = models.organizeAddress;
     _introLabel.text = model.shopIntro;
+    
 }
 
 - (void)awakeFromNib {

@@ -27,18 +27,31 @@
     RACReplaySubject * subject = [RACReplaySubject subject];
     [SVProgressHUD showWithStatus:@"加载中"];
     NSMutableDictionary * params = [NSMutableDictionary dictionary];
-    params[@"organizeId"] = @"2";//[[NSUserDefaults standardUserDefaults]objectForKey:@"organizeId"];//@"2";//responseObject[@"data"][@"organizeId"];
     params[@"pageNum"] = @(pagenum);
     params[@"sortType"] = type;
     params[@"pointsRewardTyp"] = @"GIFT";
     [[wclNetTool sharedTools]request:POST urlString:URL_GiftAndCouPonList parameters:params finished:^(id responseObject, NSError *error) {
-        [SVProgressHUD dismissWithDelay:1];
+        [SVProgressHUD dismiss];
+        if (error) {
+            [subject sendNext:@0];
+        }
+        else
+        {
+            if ([responseObject[@"data"]count]>0) {
             NSMutableArray * mainArr = [JiFenModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
             for (JiFenModel * model in mainArr) {
                 [self.mainArr addObject:model];
             }
+            [self.cell_data_dict setObject:responseObject[@"page"][@"pages"] forKey:@"page"];
             [self.cell_data_dict setObject:self.mainArr forKey:@"jifen"];
-        [subject sendNext:self.cell_data_dict];
+            [subject sendNext:self.cell_data_dict];
+            }
+            else
+            {
+            [subject sendNext:@0];
+            }
+        }
+//        [subject sendCompleted];
     }];
     return subject;
 }

@@ -15,9 +15,18 @@
 @end
 
 @implementation WCLGoodsViewController
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+}
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
 
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.title =@"好物";
     self.viewModel = [[WCLGoodsViewModel alloc]init];
     self.goodsUIService = [[WCLGoodsUIService alloc]initWithVC:self ViewModel:self.viewModel];
 }

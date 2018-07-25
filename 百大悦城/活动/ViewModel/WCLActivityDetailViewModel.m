@@ -32,24 +32,16 @@
     NSMutableArray * asfl = [NSMutableArray array];
 
     params[@"id"] = @(ID);//进行中
-    params[@"organizeId"] =@"2";//[[NSUserDefaults standardUserDefaults]objectForKey:@"organizeId"];
-    [[wclNetTool sharedTools]request:POST urlString:URL_ActivityDetail parameters:params finished:^(id responseObject, NSError *error) {
-        [SVProgressHUD dismissWithDelay:1];
-        WCLLog(@"%@",responseObject[@"data"][@"member"]);
-//        {
-            WCLActivityModel* bannerArr = [WCLActivityModel mj_objectWithKeyValues:responseObject[@"data"][@"signupDo"]];
+    [[wclNetTool sharedTools]request:GET urlString:URL_ActivityDetail parameters:params finished:^(id responseObject, NSError *error) {
+        [SVProgressHUD dismiss];
+        WCLActivityModel* bannerArr = [WCLActivityModel mj_objectWithKeyValues:responseObject[@"data"][@"signupDo"]];
         [self.tagListArr addObject:bannerArr];
-//        WCLLog(@"%@",bannerArr);
         [self.cell_data_dict setObject:self.tagListArr forKey:@"活动详情0"];
         WCLActivityMemberModel * memberArr = [WCLActivityMemberModel mj_objectWithKeyValues:responseObject[@"data"][@"member"]];
         [asfl addObject:memberArr];
         [self.cell_data_dict  setObject:asfl forKey:@"活动详情1"];
         [subject sendNext:self.cell_data_dict];
-//        }
-//        else
-//        {
-//            [subject sendNext:@(0)];
-//        }
+
     }];
     return subject;
 }

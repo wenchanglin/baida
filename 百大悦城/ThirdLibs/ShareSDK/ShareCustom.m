@@ -10,6 +10,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <ShareSDK/ShareSDK.h>
 #import <ShareSDKUI/SSUIShareActionSheetCustomItem.h>
+#import "WeiboSDK.h"
 //设备物理大小
 #define kScreenWidth   [UIScreen mainScreen].bounds.size.width
 #define kScreenHeight  [UIScreen mainScreen].bounds.size.height
@@ -32,14 +33,14 @@ static id _controller;
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     
     UIButton *blackView = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
-    blackView.backgroundColor = [[UIColor colorWithHexString:@"#EDEDED"] colorWithAlphaComponent:0.7f];
+    blackView.backgroundColor = [[UIColor lightGrayColor] colorWithAlphaComponent:0.7f];
     blackView.tag = 440;
     [window addSubview:blackView];
     [blackView addTarget:self action:@selector(shareBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     
     UIView *shareView = [[UIView alloc] initWithFrame:CGRectMake(0, IsiPhoneX?kScreenHeight -210:kScreenHeight-200, kScreenWidth, IsiPhoneX?243:209)];
     
-    shareView.backgroundColor = [UIColor lightGrayColor];
+    shareView.backgroundColor = [UIColor whiteColor];
     shareView.tag = 441;
     [window addSubview:shareView];
     
@@ -52,7 +53,7 @@ static id _controller;
     [shareView addSubview:titleLabel];
     
     NSArray *btnImages = @[@"wx", @"pyq", @"qq"];
-    NSArray *btnTitles = @[@"微信", @"朋友圈", @"QQ"];
+    NSArray *btnTitles = @[@"微信", @"微博", @"QQ"];
     for (NSInteger i=0; i<3; i++) {
        
         UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(kScreenWidth / 3 * i, 40, kScreenWidth / 3, 80)];
@@ -105,14 +106,14 @@ static id _controller;
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     
     UIButton *blackView = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
-    blackView.backgroundColor = [[UIColor colorWithHexString:@"#EDEDED"] colorWithAlphaComponent:0.7f];
+    blackView.backgroundColor = [[UIColor lightGrayColor] colorWithAlphaComponent:0.7f];
     blackView.tag = 440;
     [window addSubview:blackView];
     [blackView addTarget:self action:@selector(shareBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     
     UIView *shareView = [[UIView alloc] initWithFrame:CGRectMake(0, IsiPhoneX?kScreenHeight -210:kScreenHeight-200, kScreenWidth, IsiPhoneX?243:209)];
     
-    shareView.backgroundColor = [UIColor lightGrayColor];
+    shareView.backgroundColor = [UIColor whiteColor];
     shareView.tag = 441;
     [window addSubview:shareView];
     
@@ -125,7 +126,7 @@ static id _controller;
     [shareView addSubview:titleLabel];
     
     NSArray *btnImages = @[@"wx", @"pyq", @"qq"];
-    NSArray *btnTitles = @[@"微信", @"朋友圈", @"QQ"];
+    NSArray *btnTitles = @[@"微信", @"微博", @"QQ"];
     for (NSInteger i=0; i<3; i++) {
         
         UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(kScreenWidth / 3 * i, 40, kScreenWidth / 3, 80)];
@@ -203,7 +204,15 @@ static id _controller;
             
         case 332:
         {
-            shareType = SSDKPlatformSubTypeWechatTimeline;
+                 shareType = SSDKPlatformTypeSinaWeibo;//SSDKPlatformSubTypeWechatTimeline;
+            NSMutableDictionary* dict = [publishContent mutableCopy];
+            [dict removeObjectForKey:@"title"];
+            [dict removeObjectForKey:@"url"];
+            [dict removeObjectForKey:@"images"];
+            [dict setObject:@1 forKey:@"type"];
+            publishContent = dict;
+            WCLLog(@"%@",publishContent);
+
         }
             break;
             
@@ -236,8 +245,7 @@ static id _controller;
            }
            else if (state == SSDKResponseStateFail)
            {
-               
-               //            NSLog(NSLocalizedString(@"TEXT_ShARE_FAI", @"分享失败,错误码:%d,错误描述:%@"), [error errorCode], [error errorDescription]);
+               WCLLog( @"分享失败,错误描述:%@",error);
            }
 
    }];

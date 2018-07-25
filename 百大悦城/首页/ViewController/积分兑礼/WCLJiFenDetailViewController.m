@@ -9,6 +9,7 @@
 #import "WCLJiFenDetailViewController.h"
 #import "WCLJiFenDetailService.h"
 #import "WCLJiFenDetailViewModel.h"
+#import "WCLNavigationViewController.h"
 @interface WCLJiFenDetailViewController ()
 @property(nonatomic,strong)WCLJiFenDetailService * service;
 @property(nonatomic,strong)WCLJiFenDetailViewModel*viewModel;
@@ -19,20 +20,12 @@
 {
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:animated];
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage createImageWithColor:[UIColor colorWithHexString:@"#666666" alpha:1] frame:CGRectMake(0, 0, YBLWindowWidth, kNavigationbarHeight)] forBarMetrics:UIBarMetricsDefault];
+   
 }
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    NSShadow *shadow = [[NSShadow alloc] init];
-    shadow.shadowOffset = CGSizeZero;
-    [self.navigationController.navigationBar setTitleTextAttributes:@{
-                                                                      NSForegroundColorAttributeName:YBLColor(40, 40, 40, 1.0),
-                                                                      NSFontAttributeName:[UIFont systemFontOfSize:17],
-                                                                      NSShadowAttributeName:shadow
-                                                                      }];
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage createImageWithColor:YBLColor(255, 255, 255, 1) frame:CGRectMake(0, 0, YBLWindowWidth, kNavigationbarHeight)] forBarMetrics:UIBarMetricsDefault];//alpha 0.99
-    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+    [self.navigationController setNavigationBarHidden:NO animated:animated];
 }
 - (void)viewDidLoad {
     [super viewDidLoad];

@@ -20,6 +20,7 @@
 -(void)createUI{
     _headerView =[UIImageView new];
     _headerView.contentMode = UIViewContentModeScaleAspectFill;
+    _headerView.clipsToBounds=YES;
     [self.contentView addSubview:_headerView];
     [_headerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.right.equalTo(self.contentView);
@@ -89,7 +90,7 @@
     _cutBtn = buttonCut;
     [buttonCut mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.equalTo(self.shuliangLabel.mas_centerY);
-        make.left.equalTo(self.shuliangLabel.mas_right).offset(148);
+        make.left.equalTo(self.shuliangLabel.mas_right).offset(IsiPhoneX?SCREEN_SCALE_Iphone6*140: SCREEN_SCALE_Iphone6*110);
         make.height.mas_equalTo(36);
     }];
     _countLabel = [UILabel new];
@@ -131,14 +132,7 @@
         make.height.mas_equalTo(10);
         make.left.right.equalTo(self.contentView);
     }];
-    UIImageView * leftView = [UIImageView new];
-    leftView.image = [UIImage imageNamed:@"img_detail_leftline"];
-    [self.contentView addSubview:leftView];
-    [leftView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(view3.mas_bottom).offset(22);
-        make.left.mas_equalTo(91);
-        make.height.mas_equalTo(3);
-    }];
+   
     UILabel * huodongLabel = [UILabel new];
     huodongLabel.textAlignment = NSTextAlignmentCenter;
     huodongLabel.text = @"兑换说明";
@@ -146,7 +140,15 @@
     [self.contentView addSubview:huodongLabel];
     [huodongLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(view3.mas_bottom).offset(12);
-        make.left.equalTo(leftView.mas_right).offset(10);
+        make.centerX.equalTo(self.contentView.mas_centerX);
+    }];
+    UIImageView * leftView = [UIImageView new];
+    leftView.image = [UIImage imageNamed:@"img_detail_leftline"];
+    [self.contentView addSubview:leftView];
+    [leftView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(view3.mas_bottom).offset(22);
+        make.right.equalTo(huodongLabel.mas_left).offset(-10);
+        make.height.mas_equalTo(3);
     }];
     UIImageView * rightView = [UIImageView new];
     rightView.image = [UIImage imageNamed:@"img_detail_rightline"];
@@ -172,14 +174,7 @@
     [view4 mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.exchangeLabel.mas_bottom).offset(20);
         make.left.right.equalTo(self.contentView);
-    }];
-    UIImageView * leftView2 = [UIImageView new];
-    leftView2.image = [UIImage imageNamed:@"img_detail_leftline"];
-    [self.contentView addSubview:leftView2];
-    [leftView2 mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(view4.mas_bottom).offset(22);
-        make.left.mas_equalTo(91);
-        make.height.mas_equalTo(3);
+        make.height.mas_equalTo(10);
     }];
     UILabel * huodongLabel2 = [UILabel new];
     huodongLabel2.textAlignment = NSTextAlignmentCenter;
@@ -188,8 +183,17 @@
     [self.contentView addSubview:huodongLabel2];
     [huodongLabel2 mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(view4.mas_bottom).offset(12);
-        make.left.equalTo(leftView2.mas_right).offset(10);
+        make.centerX.equalTo(self.contentView.mas_centerX);
     }];
+    UIImageView * leftView2 = [UIImageView new];
+    leftView2.image = [UIImage imageNamed:@"img_detail_leftline"];
+    [self.contentView addSubview:leftView2];
+    [leftView2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(view4.mas_bottom).offset(22);
+        make.right.equalTo(huodongLabel2.mas_left).offset(-10);
+        make.height.mas_equalTo(3);
+    }];
+   
     UIImageView * rightView2 = [UIImageView new];
     rightView2.image = [UIImage imageNamed:@"img_detail_rightline"];
     [self.contentView addSubview:rightView2];
@@ -207,17 +211,18 @@
         make.top.equalTo(huodongLabel2.mas_bottom).offset(12);
         make.left.mas_equalTo(12);
         make.right.mas_equalTo(-12);
+        make.bottom.mas_equalTo(-10);
     }];
-    UIView* line = [UIView new];
-    [self.contentView addSubview:line];
-    [line mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.giftintroLabel.mas_bottom).offset(20);
-        make.left.mas_equalTo(15);
-        make.right.mas_equalTo(0);
-        make.height.mas_equalTo(0.5);
-        make.bottom.mas_equalTo(0); // 这句很重要！！！
-        
-    }];
+//    UIView* line = [UIView new];
+//    [self.contentView addSubview:line];
+//    [line mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.equalTo(self.giftintroLabel.mas_bottom).offset(20);
+//        make.left.mas_equalTo(15);
+//        make.right.mas_equalTo(0);
+//        make.height.mas_equalTo(0.5);
+//        make.bottom.mas_equalTo(0); // 这句很重要！！！
+//
+//    }];
 }
 -(void)click:(UIButton*)btn
 {
@@ -231,8 +236,21 @@
             break;
           case 56:
         {
-            if (_clothesCount<_models.limitGetNum) {
+            if (_clothesCount<_models.limitGetNum&&_models.limitGetNum<_models.balanceNum) {
                 _clothesCount +=1;
+            }
+            else if (_models.limitGetNum>=_models.balanceNum)
+            {
+                if(_clothesCount<_models.balanceNum)
+                {
+                    _clothesCount +=1;
+                }
+            }
+            else if (_models.limitGetNum==0)
+            {
+                if (_clothesCount<_models.balanceNum) {
+                    _clothesCount +=1;
+                }
             }
             else
             {
@@ -254,7 +272,8 @@
     _rightLabel.text = [NSString stringWithFormat:@"还剩%@件",@(models.balanceNum)];
     _introLabel.text = models.relateName;
     _exchangeLabel.text = models.exchangeIntro;
-    _giftintroLabel.text = models.exchangeIntro;
+    _giftintroLabel.text = models.giftIntro;
+//    _giftintroLabel.text = @"ajfsjalkfjlkjsalfjalkfjlakjflajf;lajfl;kjsdfj uqworiuooitlkdsjfljalkfjoiqdfiudojkldjafoijaf";
 }
 - (void)awakeFromNib {
     [super awakeFromNib];

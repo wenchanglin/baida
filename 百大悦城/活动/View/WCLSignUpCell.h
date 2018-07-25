@@ -7,7 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "WCLActivityMemberModel.h"
-@interface WCLSignUpCell : UITableViewCell
-@property(nonatomic,strong)WCLActivityMemberModel* models;
+#import "WCLOptinListModel.h"
+@protocol measureLabelAndTextDelegate <NSObject>
+
+-(void)textDetail:(NSString *)detail key:(NSString*)key tag:(NSInteger)index;
+@end
+@interface WCLSignUpCell : UITableViewCell<UITextFieldDelegate>
+@property(nonatomic,strong)UILabel *titleNameLabel;
+@property(nonatomic,strong)UITextField *inputTextField;
+@property(nonatomic,strong)WCLOptinListModel* models;
+@property (nonatomic, weak) id<measureLabelAndTextDelegate>delegate;
+
 @end

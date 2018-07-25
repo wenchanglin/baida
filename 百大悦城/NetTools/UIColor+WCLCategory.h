@@ -8,8 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+
 @interface UIColor (WCLCategory)
 + (instancetype)colorWithHex:(NSUInteger)hexColor;
 + (instancetype)colorWithHexString:(NSString *)hexStr;
 + (instancetype)colorWithHexString:(NSString *)hexStr alpha:(CGFloat)opacity;
+
+
 @end

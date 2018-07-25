@@ -7,22 +7,23 @@
 //
 
 #import "WCLAppViewModel.h"
-#import "WCLMineViewController.h"
 #import <ShareSDK/ShareSDK.h>
 #import <ShareSDKConnector/ShareSDKConnector.h>
 //腾讯开放平台（对应QQ和QQ空间）SDK头文件
 #import <TencentOpenAPI/TencentOAuth.h>
 #import <TencentOpenAPI/QQApiInterface.h>
 //微信SDK头文件
-//#import "WXApi.h"
+#import "WXApi.h"
+#import "WXApiManager.h"
 #import "WeiboSDK.h"
+#import "PageControlView.h"
+//#import "StoresSearchVC.h"
+#import "YBLUpdateVersionView.h"
+
 @interface WCLAppViewModel()
-
-
+@property(strong , nonatomic)PageControlView *pageControlV;
 @end
 static WCLAppViewModel * appView=nil;
-
-//static CLLocationManager *_locationManager = nil;
 
 //BMKMapManager* _mapManager;
 @implementation WCLAppViewModel
@@ -46,14 +47,9 @@ static WCLAppViewModel * appView=nil;
 
 -(void)finishLaunchOption:(NSDictionary *)option
 {
-   
-    
-    
-    /*WX*/
-//    [WXApi registerApp:WX_Key withDescription:@"yuncai_wxpay"];
-    
+  
     /* Share SDK */
-    [ShareSDK registerApp:@"188b0b9b49186"
+    [ShareSDK registerApp:@"26b866b20dacc"
           activePlatforms:@[
                             @(SSDKPlatformSubTypeWechatSession),
                             @(SSDKPlatformSubTypeWechatTimeline),
@@ -65,8 +61,7 @@ static WCLAppViewModel * appView=nil;
                      switch (platformType)
                      {
                          case SSDKPlatformTypeWechat:
-                             //                             [ShareSDKConnector connectWeChat:[WXApi class]];
-//                             [ShareSDKConnector connectWeChat:[WXApi class] delegate:self];
+                            [ShareSDKConnector connectWeChat:[WXApi class]];
                              break;
                          case SSDKPlatformTypeQQ:
                              [ShareSDKConnector connectQQ:[QQApiInterface class]
@@ -86,16 +81,16 @@ static WCLAppViewModel * appView=nil;
                       
                       
                   case SSDKPlatformTypeWechat:
-                      [appInfo SSDKSetupWeChatByAppId:@"wx07c2173e7686741e"
-                                            appSecret:@"c8eed9d6aeb3672d623aa9475fbb013e"];
+                      [appInfo SSDKSetupWeChatByAppId:@"wxde304ec90e9db692"
+                                            appSecret:@"2bf6169f6504c7ecf3cec586de20ae5c"];
                       break;
                   case SSDKPlatformTypeQQ:
-                      [appInfo SSDKSetupQQByAppId:@"1105803355"//
-                                           appKey:@"gAccBmTUz0l6yNti"
+                      [appInfo SSDKSetupQQByAppId:@"1106903897"//
+                                           appKey:@"MOnjZRpob2q70TZE"
                                          authType:SSDKAuthTypeBoth];
                       break;
                   case SSDKPlatformTypeSinaWeibo:
-                      [appInfo SSDKSetupSinaWeiboByAppKey:@"476026790" appSecret:@"2cfaca499726dbff5202dca18b7787b5" redirectUri:@"http://www.sharesdk.cn" authType:SSDKAuthTypeBoth];
+                      [appInfo SSDKSetupSinaWeiboByAppKey:@"193484684" appSecret:@"27049a63f30eaf0047241e320134c08d" redirectUri:@"http://yjwang.wamlle.com" authType:SSDKAuthTypeWeb];
                       break;
                   default:
                       break;
@@ -105,7 +100,9 @@ static WCLAppViewModel * appView=nil;
      *  HUD 设置
      */
     [self setUpSvpProgress];
-    
+    //验证用户是否登录
+//    [[WCLLoginViewModel signalForPerson]subscribeNext:^(NSNumber* x) {
+//    }];
     /**第一次进入程序*/
     if (![[NSUserDefaults standardUserDefaults] boolForKey:@"everLaunched"]) {
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"everLaunched"];
@@ -113,12 +110,11 @@ static WCLAppViewModel * appView=nil;
     }
     else{
         [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"firstLaunch"];
-//        [self requestHash];
     }
     /**
      *  数组越界
      */
-    //    [AvoidCrash becomeEffective];
+//        [AvoidCrash becomeEffective];
     /**
      *  键盘
      */
@@ -126,9 +122,9 @@ static WCLAppViewModel * appView=nil;
     [IQKeyboardManager sharedManager].shouldShowToolbarPlaceholder = NO;
     [IQKeyboardManager sharedManager].toolbarDoneBarButtonItemText = @"完成";
     [IQKeyboardManager sharedManager].toolbarTintColor = YBLColor(40, 40, 40, 1);
-    /**
-     *  导航栏设置
-     */
+//    /**
+//     *  导航栏设置
+//     */
     [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:YBLColor(40, 40, 40, 1),
                                                            NSFontAttributeName:YBLFont(18)}];
     UIBarButtonItem *item = [UIBarButtonItem appearance];
@@ -140,70 +136,10 @@ static WCLAppViewModel * appView=nil;
      *  检查更新
      */
     [self checkAppVersion];
-    /**
-     *  网络
-     */
-    [[AFNetworkReachabilityManager sharedManager] startMonitoring];
-    [[AFNetworkReachabilityManager sharedManager ] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-        switch (status) {
-            case -1:
-                NSLog(@"未知网络");
-                break;
-            case 0:
-                NSLog(@"网络不可达");
-                break;
-            case 1:
-                NSLog(@"GPRS网络");
-                break;
-            case 2:
-                NSLog(@"wifi网络");
-                break;
-            default:
-                break;
-        }
-        if(status ==AFNetworkReachabilityStatusReachableViaWWAN || status == AFNetworkReachabilityStatusReachableViaWiFi)
-        {
-            NSLog(@"有网");
-            [WCLUserManageCenter shareInstance].isNoActiveNetStatus = NO;
-        }else
-        {
-            NSLog(@"没有网");
-            [WCLUserManageCenter shareInstance].isNoActiveNetStatus = YES;
-        }
-    }];
+   
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        ///监听网络
-        WEAK
-        [RACObserve([WCLUserManageCenter shareInstance], isNoActiveNetStatus) subscribeNext:^(NSNumber*  _Nullable x) {
-            STRONG
-            if (x.boolValue) {
-                UIWindow *window = [UIApplication sharedApplication].keyWindow;
-                UINavigationController *navVc = [self getNavigationCWithWindow:window];
-                if ([navVc isKindOfClass:[WCLMineViewController class]]) {
-                    [YBLNetWorkHudBar startMonitorWithVc:navVc];
-                }
-                else
-                {
-                [YBLNetWorkHudBar startMonitorWithVc:navVc.visibleViewController];
-                }
-            } else {
-                [YBLNetWorkHudBar dismissHudView];
-            }
-            [SVProgressHUD dismiss];
-            [YBLLogLoadingView dismissInWindow];
-        }];
-    });
-    
-    //    [[SDImageCache sharedImageCache] setShouldDecompressImages:NO];
-//    [[SDWebImageDownloader sharedDownloader] setShouldDecompressImages:NO];
-    // 从全局的 queue pool 中获取一个 queue
-    //    dispatch_queue_t queue = YYDispatchQueueGetForQOS(NSQualityOfServiceUtility);
-    //
-    //    // 创建一个新的 serial queue pool
-    //    YYDispatchQueuePool *pool = [[YYDispatchQueuePool alloc] initWithName:@"file.read" queueCount:5 qos:NSQualityOfServiceBackground];
-    //    dispatch_queue_t queue1 = [pool queue];
 }
+
 
 //初始化提示框
 - (void)setUpSvpProgress {
@@ -215,8 +151,8 @@ static WCLAppViewModel * appView=nil;
     [SVProgressHUD setDefaultStyle:SVProgressHUDStyleCustom];
     [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeClear];
     [SVProgressHUD setCornerRadius:8];
-    [SVProgressHUD setBackgroundColor:YBLColor(0, 0, 0, 0.6)];
-    [SVProgressHUD setForegroundColor:[UIColor whiteColor]];
+//    [SVProgressHUD setBackgroundColor:YBLColor(0, 0, 0, 0.6)];
+//    [SVProgressHUD setForegroundColor:[UIColor whiteColor]];
     [SVProgressHUD setDefaultAnimationType:SVProgressHUDAnimationTypeNative];
     [SVProgressHUD setFont:YBLFont(16)];
     [SVProgressHUD setMinimumDismissTimeInterval:1.5];
@@ -224,30 +160,59 @@ static WCLAppViewModel * appView=nil;
     [SVProgressHUD setMinimumSize:CGSizeMake(wi, wi)];
     
 }
-
+- (NSString*)getPreferredLanguage
+{
+    NSUserDefaults* defs = [NSUserDefaults standardUserDefaults];
+    NSArray* languages = [defs objectForKey:@"AppleLanguages"];
+    NSString* preferredLang = [languages objectAtIndex:0];
+    return preferredLang;
+}
 - (void)checkAppVersion{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
+        NSString * URL = nil;
+        if ([[self getPreferredLanguage] hasPrefix:@"zh-"]) {
+            URL = @"https://itunes.apple.com/search?term=百大悦城&country=cn&entity=software";
+            URL = [URL stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
+        }
+        else //en-US 英文版
+        {
+            URL = @"http://itunes.apple.com/lookup?id=1084967248";//1159191582 1084967248
+        }
+       
+        
+        NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:URL]];
+        if (!data) {
+            return ;
+        }
+        NSError *error;
+        NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+        jsonDict = [jsonDict[@"results"] firstObject];
+        
+        if (!error && jsonDict) {
+            NSString *newVersion =jsonDict[@"version"];
+            NSString *nowVersion = [infoDict objectForKey:@"CFBundleShortVersionString"];
+            
+            NSString *dot = @".";
+            NSString *whiteSpace = @"";
+            int newV = [newVersion stringByReplacingOccurrencesOfString:dot withString:whiteSpace].intValue;
+            int nowV = [nowVersion stringByReplacingOccurrencesOfString:dot withString:whiteSpace].intValue;
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if(newV > nowV)
+                {
+        
+                    //需要更新
+                    YBLUpdateReaseNotModel *notModel = [YBLUpdateReaseNotModel new];
+                    notModel.releaseNot = jsonDict[@"releaseNotes"];
+                    notModel.version =jsonDict[@"version"];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:App_Notification_Version object:nil userInfo:@{@"model":notModel}];
+                }
+                
+            });
+        }
+    });
     
-    NSMutableDictionary *para = [NSMutableDictionary dictionary];
-    para[@"app"] = @"ios";
-    //    [YBLRequstTools HTTPGetDataWithUrl:url_versions
-    //                               Parames:para
-    //                             commplete:^(id result, NSInteger statusCode) {
-    //
-    //                                 NSString *version = result[@"version"];
-    //                                 NSString *releaseNotes = result[@"desc"];
-    //                                 NSString *now_version= [YBLMethodTools getAppVersion];
-    //                                 NSComparisonResult compare_result =  [version compare:now_version options:NSNumericSearch];
-    //                                 if (compare_result == NSOrderedDescending) {
-    //                                     //需要更新
-    //                                     YBLUpdateReaseNotModel *notModel = [YBLUpdateReaseNotModel new];
-    //                                     notModel.releaseNot = releaseNotes;
-    //                                     notModel.version = version;
-    //                                     [[NSNotificationCenter defaultCenter] postNotificationName:App_Notification_Version object:nil userInfo:@{@"model":notModel}];
-    //                                 }
-    //                             }
-    //                               failure:^(NSError *error, NSInteger errorCode) {
-    //
-    //                               }];
     
 }
 
@@ -267,16 +232,15 @@ static WCLAppViewModel * appView=nil;
 - (void)showGuideView{
     
     NSMutableArray *imageArray = [NSMutableArray array];
-    for (int i = 1; i < 5; i++) {
+    for (int i = 1; i < 4; i++) {
         NSString *imageName = [NSString stringWithFormat:@"%@%@",@"LaunchIntrudutionImage",@(i)];
         [imageArray addObject:imageName];
     }
-    [YBLGuideView showGuideViewWithDataArray:imageArray
-                                   doneBlock:^{
-                                       
-                                   }];
-    
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    _pageControlV = [[PageControlView instance] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT) andImageList:imageArray];
+    [window addSubview:self.pageControlV];
 }
+
 
 
 - (void)showAnimationLaunchImageView{
@@ -322,11 +286,7 @@ static WCLAppViewModel * appView=nil;
     
 }
 
-- (UINavigationController *)getNavigationCWithWindow:(UIWindow *)window;{
-    UITabBarController *tabVC = (UITabBarController  *)window.rootViewController;
-    UINavigationController *pushClassStance = (UINavigationController *)tabVC.viewControllers[tabVC.selectedIndex];
-    return pushClassStance;
-}
+
 
 
 @end

@@ -42,6 +42,11 @@
             
             UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
             button.tag = i;
+           if(i==0)
+           {
+               button.selected=YES;
+           }
+//            button.selected=NO;
             button.frame = CGRectMake(i*(frame.size.width/self.nameArray.count), 0, frame.size.width/self.nameArray.count, segmentViewHeight);
             button.titleLabel.font = [UIFont systemFontOfSize:16];
             [button setTitle:self.nameArray[i] forState:UIControlStateNormal];
@@ -78,15 +83,13 @@
 
 
 - (void)Click:(UIButton *)sender {
-    
     UIButton *button = sender;
-    [button setTitleColor:[UIColor orangeColor] forState:UIControlStateNormal];
+    [button setTitleColor:[UIColor colorWithHexString:@"#990000"] forState:UIControlStateNormal];
     
     for (UIButton * btn in _buttonArray) {
-        
         if (button != btn ) {
             
-            [btn setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+            [btn setTitleColor:[UIColor colorWithHexString:@"#E0BE8D"] forState:UIControlStateNormal];
         }
     }
     
@@ -112,10 +115,7 @@
     
     int pageNum = scrollView.contentOffset.x / [UIScreen mainScreen].bounds.size.width;
     for (UIButton * btn in self.buttonArray) {
-        
-        (btn.tag == pageNum )
-        ?([btn setTitleColor:[UIColor orangeColor] forState:UIControlStateNormal])
-        :([btn setTitleColor:[UIColor grayColor] forState:UIControlStateNormal]);
+        (btn.tag == pageNum )?([btn setTitleColor:[UIColor colorWithHexString:@"#990000"] forState:UIControlStateNormal]):([btn setTitleColor:[UIColor colorWithHexString:@"#E0BE8D"] forState:UIControlStateNormal]);
     }
     [self initChildViewController];
 }

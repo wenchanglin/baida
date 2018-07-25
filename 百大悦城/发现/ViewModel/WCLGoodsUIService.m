@@ -11,11 +11,12 @@
 #import "WCLGoodsViewModel.h"
 #import "WCLSpecialCell.h"
 #import "WCLNewGoodsCell.h"
-#import "WCLGoodsModel.h"
+#import "WCLGoodsDetailViewController.h"
+#import "WCLShopSwitchModel.h"
 @interface WCLGoodsUIService()<UITableViewDelegate,UITableViewDataSource>
-@property(nonatomic,weak)WCLGoodsViewModel * viewModel;
-@property(nonatomic,weak)WCLGoodsViewController * goodsVC;
-
+@property(nonatomic,strong)WCLGoodsViewModel * viewModel;
+@property(nonatomic,strong)WCLGoodsViewController * goodsVC;
+@property(nonatomic,strong)NSString*string1;
 @end
 @implementation WCLGoodsUIService
 {
@@ -28,6 +29,15 @@
         _viewModel = (WCLGoodsViewModel*)viewModel;
         _goodsVC = (WCLGoodsViewController*)VC;
         [_goodsVC.view addSubview:self.homeTableView];
+        [[[[NSNotificationCenter defaultCenter]rac_addObserverForName:@"changeCity" object:nil]throttle:1]subscribeNext:^(NSNotification * _Nullable x) {
+            WCLShopSwitchListModel * model = (WCLShopSwitchListModel*)[x.userInfo objectForKey:@"key"];
+            //                WCLLog(@"%@",@(model.organizeId));
+            [[NSUserDefaults standardUserDefaults]setObject:@(model.organizeId) forKey:@"organizeId"];
+            [self.viewModel.cell_data_dict removeAllObjects];
+            [self.viewModel.goodsArr removeAllObjects];
+            [self.viewModel.goodsNewArr removeAllObjects];
+            [self requestData];
+        }];
         [self requestData];
     }
     return self;
@@ -63,12 +73,11 @@
         [_homeTableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
         [_homeTableView setBackgroundColor:[UIColor colorWithHexString:@"#EDEDED"]];
         WEAK
-        //        [YBLMethodTools footerAutoRefreshWithTableView:_homeTableView completion:^{
-        //            STRONG
-        //            [self loadCommandMore];
-        //        }];
         [YBLMethodTools headerRefreshWithTableView:_homeTableView completion:^{
             STRONG
+            [self.viewModel.cell_data_dict removeAllObjects];
+            [self.viewModel.goodsArr removeAllObjects];
+            [self.viewModel.goodsNewArr removeAllObjects];
             [self requestData];
         }];
     }
@@ -129,10 +138,20 @@
     {
         UIView * view = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 65)];
         view.backgroundColor = [UIColor colorWithHexString:@"#EDEDED"];
-        UILabel * couponLabel = [[UILabel alloc]initWithFrame:CGRectMake((SCREEN_WIDTH-200)/2, 25, 200, 30)];
-        couponLabel.textAlignment = NSTextAlignmentCenter;
-        couponLabel.text = [NSString stringWithFormat:@"人气》"];
-        couponLabel.font = [UIFont boldSystemFontOfSize:22];
+        UIButton * couponLabel = [[UIButton alloc]initWithFrame:CGRectMake((SCREEN_WIDTH-100)/2+15, 25, 100, 30)];
+        couponLabel.tag = 220+section;
+        couponLabel.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+        [couponLabel setImage:[UIImage imageNamed:@"icon_more"] forState:UIControlStateNormal];
+        [couponLabel setTitle:@"人气" forState:UIControlStateNormal];
+        [couponLabel setTitleColor:[UIColor colorWithHexString:@"#101010"] forState:UIControlStateNormal];
+        [couponLabel setTitleEdgeInsets:UIEdgeInsetsMake(0, -couponLabel.imageView.bounds.size.width-30, 0, couponLabel.imageView.bounds.size.width)];
+        [couponLabel setImageEdgeInsets:UIEdgeInsetsMake(0, couponLabel.titleLabel.bounds.size.width, 0, -couponLabel.titleLabel.bounds.size.width)];
+        [[couponLabel rac_signalForControlEvents:UIControlEventTouchUpInside]subscribeNext:^(__kindof UIControl * _Nullable x) {
+            WCLGoodsDetailViewController * dvc= [[WCLGoodsDetailViewController alloc]init];
+            dvc.hidesBottomBarWhenPushed=YES;
+            [self.goodsVC.navigationController pushViewController:dvc animated:YES];
+        }];
+        couponLabel.titleLabel.font = [UIFont boldSystemFontOfSize:22];
         [view addSubview:couponLabel];
         return view;
     }
@@ -140,10 +159,20 @@
     {
         UIView * view = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 65)];
         view.backgroundColor = [UIColor colorWithHexString:@"#EDEDED"];
-        UILabel * couponLabel = [[UILabel alloc]initWithFrame:CGRectMake((SCREEN_WIDTH-200)/2, 25, 200, 30)];
-        couponLabel.textAlignment = NSTextAlignmentCenter;
-        couponLabel.text = [NSString stringWithFormat:@"新品》"];
-        couponLabel.font = [UIFont boldSystemFontOfSize:22];
+        UIButton * couponLabel = [[UIButton alloc]initWithFrame:CGRectMake((SCREEN_WIDTH-100)/2+15, 25, 100, 30)];
+        couponLabel.tag = 220+section;
+        couponLabel.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+        [couponLabel setImage:[UIImage imageNamed:@"icon_more"] forState:UIControlStateNormal];
+        [couponLabel setTitle:@"新品" forState:UIControlStateNormal];
+        [couponLabel setTitleColor:[UIColor colorWithHexString:@"#101010"] forState:UIControlStateNormal];
+        [couponLabel setTitleEdgeInsets:UIEdgeInsetsMake(0, -couponLabel.imageView.bounds.size.width-30, 0, couponLabel.imageView.bounds.size.width)];
+        [couponLabel setImageEdgeInsets:UIEdgeInsetsMake(0, couponLabel.titleLabel.bounds.size.width, 0, -couponLabel.titleLabel.bounds.size.width)];
+        [[couponLabel rac_signalForControlEvents:UIControlEventTouchUpInside]subscribeNext:^(__kindof UIControl * _Nullable x) {
+//            WCLCouPonViewController * cvc = [[WCLCouPonViewController alloc]init];
+//            cvc.hidesBottomBarWhenPushed=YES;
+//            [self.homeVC.navigationController pushViewController:cvc animated:YES];
+        }];
+        couponLabel.titleLabel.font = [UIFont boldSystemFontOfSize:22];
         [view addSubview:couponLabel];
         return view;
     }
@@ -161,6 +190,15 @@
         NSMutableArray* tuijianArr = [NSMutableArray arrayWithArray:array1];
         WCLSpecialCell * cell = [tableView dequeueReusableCellWithIdentifier:@"WCLSpecialCell"];
         cell.specArr =tuijianArr;
+        WEAK
+        [cell setSpecdidselect:^(WCLGoodsModel *model)
+        {
+            STRONG
+            self.string1 = [NSString stringWithFormat:@"¥%@",model.nowPrice];
+            NSString * hash =[[NSUserDefaults standardUserDefaults]objectForKey:@"hash"];
+            
+            [YBLMethodTools pushWebVcFrom:self.goodsVC URL:[NSString stringWithFormat:@"%@commodity/specialDetail?id=%@&hash=%@&appType=ios",URL_H5,@(model.commodityId),hash] title:model.commodityName string:self.string1 type:@"人气单品详情" buystate:@"" activityid:@""];
+        }];
         reCell = cell;
     }
     else if(section==1)
@@ -171,6 +209,7 @@
         WCLNewGoodsCell * cell = [tableView dequeueReusableCellWithIdentifier:@"WCLNewGoodsCell"];
         cell.models = models;
         reCell = cell;
+        
     }
     reCell.selectionStyle = UITableViewCellSelectionStyleNone;
     return reCell;
@@ -178,17 +217,26 @@
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == 0) {
-        return 470;
+        return 480;
     }
     else if(indexPath.section==1)
     {
-        return 100;
+        return 130;
     }
     else
         return 1;
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    WCLLog(@"%@",@(indexPath.row));
+    NSString * hash =[[NSUserDefaults standardUserDefaults]objectForKey:@"hash"];
+    NSString * organizeId =[[NSUserDefaults standardUserDefaults]objectForKey:@"organizeId"];
+
+    WCLGoodsModel * model2 = [self.viewModel.cell_data_dict arrayForKey:@"新品"][indexPath.row];
+    WCLRegisetProtocolVC * pvc = [[WCLRegisetProtocolVC alloc]init];
+    pvc.url = [NSString stringWithFormat:@"%@commodity/newDetail?id=%@&hash=%@&appType=ios&organizeId=%@",URL_H5,@(model2.shopId),hash,organizeId];
+    pvc.hidesBottomBarWhenPushed=YES;
+    pvc.present =YES;
+    WCLLog(@"%@",@(model2.shopId));
+    [self.goodsVC presentViewController:pvc animated:NO completion:nil];
 }
 @end

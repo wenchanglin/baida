@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @interface WCLFindShopViewModel : NSObject
--(RACSignal *)findShopSignalShopName:(NSString *)shopName withindustryId:(NSString*)industryId withfloorId:(NSString*)floorId;
+-(RACSignal *)findShopSignalShopName:(NSString *)shopName withindustryId:(NSString*)industryId withfloorId:(NSString*)floorId page:(NSInteger)page;
 @property(nonatomic,strong) NSMutableArray * floorArr;
 @property(nonatomic,strong)NSMutableArray * shopListArr;
 @property(nonatomic,strong)NSMutableArray * shopIndustryArr;

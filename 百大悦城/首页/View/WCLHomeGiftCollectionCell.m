@@ -22,22 +22,18 @@
     UIView *contentView = self.contentView;
     _bgView = [UIImageView new];
     [contentView addSubview:_bgView];
-    
-    _bgView.sd_layout
-    .leftEqualToView(contentView)
-    .rightEqualToView(contentView)
-    .topEqualToView(contentView)
-    .bottomEqualToView(contentView);
-    
-//    [_bgView setImage:[UIImage imageNamed:@"kapian"]];
+    [_bgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(contentView);
+    }];
+
     
     _imgView = [UIImageView new];
     [_bgView addSubview:_imgView];
-    _imgView.sd_layout
-    .leftSpaceToView(_bgView,5)
-    .topSpaceToView(_bgView, 15)
-    .rightSpaceToView(_bgView, 5)
-    .bottomSpaceToView(_bgView, 60);
+    [_imgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.bgView.mas_top).offset(11);
+        make.left.equalTo(self.bgView.mas_left).offset(5);
+        make.width.height.mas_equalTo(170);
+    }];
     [_imgView setContentMode:UIViewContentModeScaleAspectFill];
     [_imgView.layer setMasksToBounds:YES];
     
@@ -73,7 +69,7 @@
 -(void)setModels:(WCLHomeGiftModel *)models
 {
     _models = models;
-    [_imgView sd_setImageWithURL:[NSURL URLWithString:models.giftPicturePath] placeholderImage:[UIImage imageNamed:@"logoImage"]];
+    [_imgView sd_setImageWithURL:[NSURL URLWithString:models.giftPicturePath] placeholderImage:[UIImage imageNamed:@"icon_big_placeholder"]];
     _titleLabel.text = models.relateName;
     _tagLabel.text = [NSString stringWithFormat:@"%@积分",@(models.needScore)];
 }

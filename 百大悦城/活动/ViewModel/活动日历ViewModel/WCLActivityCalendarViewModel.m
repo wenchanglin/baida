@@ -28,9 +28,8 @@
     [SVProgressHUD showWithStatus:@"加载中"];
     NSMutableDictionary * params = [NSMutableDictionary dictionary];
     params[@"tagId"] = @"0";
-    params[@"organizeId"] =@"2";//[[NSUserDefaults standardUserDefaults]objectForKey:@"organizeId"];
     [[wclNetTool sharedTools]request:POST urlString:URL_ActivityList parameters:params finished:^(id responseObject, NSError *error) {
-        [SVProgressHUD dismissWithDelay:1];
+        [SVProgressHUD dismiss];
         if([responseObject[@"data"] count]>0)
         {
             NSArray*   bannerArr = [WCLActivityModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];

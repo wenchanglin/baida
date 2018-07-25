@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @interface WCLActivityingViewModel : NSObject
-@property(nonatomic,strong)RACSignal * activityingDataSignal;
+-(RACSignal *)activityingDataSignalWithtagId:(NSString*)tagId;
 @property(nonatomic,strong) NSMutableArray * tagListArr;
 @property (nonatomic, strong) NSMutableDictionary *cell_data_dict;
 @end

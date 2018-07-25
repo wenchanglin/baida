@@ -31,10 +31,19 @@
 - (void)nextClick:(UIBarButtonItem *)btn;
 - (void)addClick:(UIBarButtonItem *)btn;
 - (void)saveClick:(UIBarButtonItem *)btn;
-
+-(void)showMesageWithString:(NSString*)message withDelay:(NSTimeInterval)time;
 - (void)goback1;
-
+//MD5加密方式
+-(NSString *)md5:(NSString *)str;
 - (void)setMyTranslucent:(BOOL)translucent;
+/**毫秒*/
+-(NSString*)getNowTimestamp;
+//字符串转时间
+-(NSDate *)nsstringConversionNSDate:(NSString *)dateStr;
+//时间转时间戳
+-(NSString *)dateConversionTimeStamp:(NSDate *)date;
+
+
 
 @end
 

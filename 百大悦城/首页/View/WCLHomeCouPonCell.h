@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "WCLHomeCouPonModel.h"
+typedef void(^PointsBlock)(WCLHomeCouPonModel*model);
+typedef void(^FreeBlock)(WCLHomeCouPonModel*model);
+typedef void(^FanliBlock)(WCLHomeCouPonModel*model,NSString* jifen);
+
 @interface WCLHomeCouPonCell : UITableViewCell
 @property(nonatomic,strong)UIImageView * backImageView;
 @property(nonatomic,strong)UIImageView * iconImageView;
@@ -16,5 +20,9 @@
 @property(nonatomic,strong)UILabel* couponCountLabel;
 @property(nonatomic,strong)UIButton * receiveBtn;
 @property(nonatomic,strong)UILabel* receiveLabel;
+@property(nonatomic,strong)PointsBlock pointsBlock;
+@property(nonatomic,strong)FreeBlock freeBlock;
+@property(nonatomic,strong)FanliBlock fanliBlock;
+
 @property(nonatomic,strong)WCLHomeCouPonModel* models;
 @end

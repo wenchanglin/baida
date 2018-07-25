@@ -9,14 +9,15 @@
 #import "StoresSearchVC.h"
 #import"WCLFindShopModel.h"
 #import "WCLShopListCell.h"
-//#import "StoreListModel.h"
-//#import "StoreListCell.h"
-//#import "StoreRecommendDetailVC.h"
-@interface StoresSearchVC ()<UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate>
+#import "WCLShopDetailVC.h"
+#import <UIScrollView+EmptyDataSet.h>
+@interface StoresSearchVC ()<UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate,DZNEmptyDataSetSource,DZNEmptyDataSetDelegate>
 @property(nonatomic,strong)NSMutableArray * storeArray;
 @property(nonatomic,strong)UITableView * storeTableView;
 @property (strong,nonatomic) NSMutableArray  *searchList;//保存搜索结果
 @property (assign,nonatomic) BOOL active;
+@property(nonatomic,strong)UIImageView *nodataView;
+@property(nonatomic,strong)UILabel *nodataLabel;
 
 @property(nonatomic,weak)UISearchBar *searchbar;
 @end
@@ -28,62 +29,77 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [self.navigationController setNavigationBarHidden:NO animated:animated];
+    [IQKeyboardManager sharedManager].enableAutoToolbar = NO; // 控制是否显示键盘上的工具条
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor colorWithHexString:@"#EDEDED"];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(searchDataWithKeyWord:) name:@"mandiancollect" object:nil];
+   
     self.title = @"找店铺";
     _searchList =[NSMutableArray array];
-    _searchList = [NSMutableArray array];
     page =1;
     //[self settabTitle:@"门店搜索"];
     [self createUI];
 }
 -(void)searchDataWithKeyWord:(NSString *)keyword
 {
-   
+        WEAK
         [SVProgressHUD showWithStatus:@"加载中"];
         NSMutableDictionary * parameter = [NSMutableDictionary dictionary];
         parameter[@"shopName"] = keyword;
         parameter[@"pageNum"] = @(page);
         parameter[@"industryId"] = @"";
-        parameter[@"organizeId"] = @"2";//responseObject[@"data"][@"organizeId"];
         [[wclNetTool sharedTools]request:POST urlString:@"shop/getShopList.json" parameters:parameter finished:^(id responseObject, NSError *error) {
-            [SVProgressHUD dismissWithDelay:1];
-            if ([responseObject[@"shopList"]count]==0&&page>1) {
-                [self.storeTableView.mj_footer endRefreshingWithNoMoreData];
+            [SVProgressHUD dismiss];
+            WCLLog(@"%@",responseObject);
+            if([[responseObject arrayForKey:@"shopList"]count]>0)
+            {
+                NSMutableArray * stroyArr = [WCLFindShopModel mj_objectArrayWithKeyValuesArray:responseObject[@"shopList"]];
+                for (WCLFindShopModel*models in stroyArr) {
+                    [self.searchList addObject:models];
+                }
+                NSInteger pages = [responseObject[@"page"][@"pages"] integerValue];
+                if (pages>self->page) {
+                    [YBLMethodTools footerRefreshWithTableView:self.storeTableView completion:^{
+                    STRONG
+                    self->page +=1;
+                    [self searchDataWithKeyWord:keyword];
+                    }];
+                [self.storeTableView.mj_header endRefreshing];
+                }
+                else if(pages<=self->page)
+                {
+                self.storeTableView.mj_footer.hidden=YES;
+                [self.storeTableView.mj_header endRefreshing];
+
+                
+                }
             }
             else
             {
-            [self.storeTableView.mj_footer resetNoMoreData];
-            self.searchList = [WCLFindShopModel mj_objectArrayWithKeyValuesArray:responseObject[@"shopList"]];
-                    [self.storeTableView reloadData];
+                [self.storeTableView.mj_header endRefreshing];
             }
-//            self.shopListArr = [WCLFindShopModel mj_objectArrayWithKeyValuesArray:responseObject[@"shopList"]];
-//            [self.cell_data_dict setObject:self.floorArr forKey:@"全部楼层"];
-//            [self.cell_data_dict setObject:self.shopListArr forKey:@"店铺列表"];
-//            [self.cell_data_dict setObject:self.shopIndustryArr forKey:@"全部分类"];
-//            [subject sendNext:self.cell_data_dict];
+            [self.storeTableView reloadData];
+
         }];
-    
-//    NSMutableDictionary * parameter = [NSMutableDictionary dictionary];
-//    [parameter setObject:@(page) forKey:@"page"];
-//    [parameter setObject:keyword forKey:@"like"];
-//    [[wclNetTool sharedTools]request:GET urlString:URL_MenDianSelect parameters:parameter finished:^(id responseObject, NSError *error) {
-//        if ([responseObject[@"data"] count]==0&&page>1) {
-//            [_storeTableView.mj_footer endRefreshingWithNoMoreData];
-//            return ;
-//        }
-//        else if([responseObject[@"data"]count]==0&&page==1)
-//        {
-//            [self alertViewShowOfTime:@"未搜索到该关键字的门店，请重新输入" time:2];
-//        }
-//        _searchList = [StoreListModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
-//        [_storeTableView reloadData];
-//
-//    }];
+
 }
+#pragma mark - 占位图
+-(UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
+{
+    return [UIImage imageNamed:@"icon_nostore"];
+}
+- (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView {
+    NSString *title = @"暂无数据";
+    NSDictionary *attributes = @{
+                                 NSFontAttributeName:[UIFont boldSystemFontOfSize:18.0f],
+                                 NSForegroundColorAttributeName:[UIColor colorWithHexString:@"#A4C9EE"]
+                                 };
+    return [[NSAttributedString alloc] initWithString:title attributes:attributes];
+}
+
+
 -(void)createUI
 {
     if (@available(iOS 11.0, *)) {
@@ -91,9 +107,13 @@
     } else {
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
-    _storeTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 54, SCREEN_WIDTH, SCREEN_HEIGHT-64-54) style:UITableViewStylePlain];
+    _storeTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 38, SCREEN_WIDTH,IsiPhoneX?SCREEN_HEIGHT-88-54: SCREEN_HEIGHT-64-38) style:UITableViewStyleGrouped];
     _storeTableView.dataSource = self;
     _storeTableView.delegate = self;
+    _storeTableView.emptyDataSetDelegate = self;
+    _storeTableView.emptyDataSetSource = self;
+    _storeTableView.estimatedSectionFooterHeight =0;
+    _storeTableView.estimatedSectionHeaderHeight=0;
     _storeTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [_storeTableView registerClass:[WCLShopListCell class] forCellReuseIdentifier:@"WCLShopListCells"];
     [self.view addSubview:_storeTableView];
@@ -102,17 +122,17 @@
     searchbar.delegate=self;
     searchbar.tintColor=[UIColor colorWithHexString:@"#A6A6A6"];// 设置搜索框内按钮文字颜色，以及搜索光标颜色。
     
-    searchbar.placeholder=@"请输入定制店名称、关键字";
-    searchbar.frame=CGRectMake(0, 10, self.view.frame.size.width, 44);
+    searchbar.placeholder=@"输入店铺名称搜索";
+    searchbar.frame=CGRectMake(0, 0, self.view.frame.size.width, 44);
     [searchbar setImage:[UIImage imageNamed:@"icon_search"] forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
-    [searchbar setBackgroundImage:[UIImage createImageWithColor:[UIColor lightGrayColor] frame:searchbar.frame]];
+   [searchbar setBackgroundImage:[UIImage createImageWithColor:[UIColor colorWithHexString:@"#F5F5F5"] frame:searchbar.frame]forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
     [self.view addSubview:searchbar];
     [searchbar setReturnKeyType:UIReturnKeyDone];
-    [self updown];
+//    [self updown];
 }
 - (void)updown {
     __weak StoresSearchVC *weakSelf = self;
-    _storeTableView.mj_footer = [MJRefreshAutoNormalFooter  footerWithRefreshingBlock:^{
+    _storeTableView.mj_footer = [MJRefreshBackNormalFooter  footerWithRefreshingBlock:^{
        self->page += 1;
         [weakSelf searchDataWithKeyWord:self.searchbar.text];
         
@@ -163,6 +183,7 @@
     [self.searchbar setShowsCancelButton:NO animated:YES];
     self.active=NO;
     page = 1;
+    [self.searchList removeAllObjects];
     [self searchDataWithKeyWord:searchBar.text];
     
 }
@@ -214,10 +235,12 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-//    StoreListModel * models1 = _searchList[indexPath.row];
-//    StoreRecommendDetailVC * vc = [[StoreRecommendDetailVC alloc]init];
-//    vc.model = models1;
-//    [self.navigationController pushViewController:vc animated:YES];
+    WCLFindShopModel* model = self.searchList[indexPath.row];
+    WCLShopDetailVC * dvc = [[WCLShopDetailVC alloc]init];
+    dvc.shopid = model.shopId;
+    dvc.yetaiStr = [model.industryList[0] stringForKey:@"industryName"];
+    dvc.floorName = model.floorName;
+    [self.navigationController pushViewController:dvc animated:YES];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

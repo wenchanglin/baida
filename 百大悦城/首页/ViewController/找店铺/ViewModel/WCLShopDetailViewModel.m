@@ -7,7 +7,7 @@
 //
 
 #import "WCLShopDetailViewModel.h"
-#import "WCLShopSwitchListModel.h"
+#import "WCLShopSwitchModel.h"
 #import "WCLFindShopModel.h"
 #import "WCLGoodsModel.h"
 @implementation WCLShopDetailViewModel
@@ -32,45 +32,41 @@
     [SVProgressHUD showWithStatus:@"加载中"];
     NSMutableDictionary * parameter = [NSMutableDictionary dictionary];
     parameter[@"shopId"] = @(shopID);
-    parameter[@"organizeId"] = @"2";//responseObject[@"data"][@"organizeId"];
     [[wclNetTool sharedTools]request:POST urlString:URL_Shop_Detail parameters:parameter finished:^(id responseObject, NSError *error) {
-        [SVProgressHUD dismissWithDelay:1];
-      //  WCLLog(@"%@",responseObject);
+        [SVProgressHUD dismiss];
+        WCLLog(@"%@",responseObject);
         WCLShopSwitchListModel * model = [WCLShopSwitchListModel mj_objectWithKeyValues:responseObject[@"mall"]];
         [self.mallArr addObject:model];
         WCLFindShopModel * models = [WCLFindShopModel mj_objectWithKeyValues:responseObject[@"shop"]];
         [self.shopArr addObject:models];
         [self.cell_data_dict setObject:self.mallArr forKey:@"mall"];
-        [self.cell_data_dict setObject:self.shopArr forKey:@"shop"];
-//        [self ShopDetailWithShopId:shopID];
-       
+        [self.cell_data_dict setObject:self.shopArr forKey:@"shop"];       
         [subject sendNext:self.cell_data_dict];
     }];
     return subject;
 }
-//-(RACSignal *)ShopDetailWithXinPinId:(NSInteger)shopID
-//{
-//    RACReplaySubject * subject = [RACReplaySubject subject];
-//    [SVProgressHUD showWithStatus:@"加载中"];
-//    NSMutableDictionary * parameter = [NSMutableDictionary dictionary];
-//    parameter[@"shopId"] = @(shopID);
-//    parameter[@"commodityType"] = @"FIRSTLOOK";
-//    parameter[@"organizeId"] = @"2";//responseObject[@"data"][@"organizeId"];
-//    [[wclNetTool sharedTools]request:POST urlString:URL_Find_GoodsList parameters:parameter finished:^(id responseObject, NSError *error) {
-//        [SVProgressHUD dismissWithDelay:1];
+-(RACSignal *)ShopDetailWithXinPinId:(NSInteger)shopID
+{
+    RACReplaySubject * subject = [RACReplaySubject subject];
+    [SVProgressHUD showWithStatus:@"加载中"];
+    NSMutableDictionary * parameter = [NSMutableDictionary dictionary];
+    parameter[@"shopId"] = @(shopID);
+    parameter[@"commodityType"] = @"FIRSTLOOK";
+    [[wclNetTool sharedTools]request:POST urlString:URL_Find_GoodsList parameters:parameter finished:^(id responseObject, NSError *error) {
+        [SVProgressHUD dismiss];
 //          WCLLog(@"%@",responseObject);
-//        if ([responseObject[@"data"] count]>0) {
-//            self.xinpinArr = [WCLGoodsModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
-//            [self.cell_data_dict setObject:self.xinpinArr forKey:@"xinpin"];
-//        }
-//        else
-//        {
+        if ([responseObject[@"data"] count]>0) {
+            self.xinpinArr = [WCLGoodsModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+            [self.cell_data_dict setObject:self.xinpinArr forKey:@"xinpin"];
+        }
+        else
+        {
 //            [SVProgressHUD showErrorWithStatus:@"未获取到数据，请重试"];
-//            
-//        }
-//        [subject sendNext:self.cell_data_dict];
-//    }];
-//    return subject;
-//    
-//}
+            
+        }
+        [subject sendNext:self.cell_data_dict];
+    }];
+    return subject;
+    
+}
 @end

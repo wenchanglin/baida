@@ -14,7 +14,6 @@
 @end
 @interface WCLHomeFuncCell : UITableViewCell<UICollectionViewDelegate,UICollectionViewDataSource>
 @property(nonatomic,strong)NSMutableArray *modelArray;
-@property(nonatomic,strong)RACSubject * funcSubject;
 @property (nonatomic,strong) NSMutableArray *funcArr;
 @property(nonatomic,weak)id<HomeFuncDelegate>delegate;
 @end

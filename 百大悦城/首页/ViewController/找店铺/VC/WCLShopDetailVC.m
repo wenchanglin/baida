@@ -16,7 +16,37 @@
 @end
 
 @implementation WCLShopDetailVC
-
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    NSShadow *shadow = [[NSShadow alloc] init];
+    shadow.shadowOffset = CGSizeZero;
+    UIColor *topleftColor = [UIColor colorWithHexString:@"#FFE9C0"];
+    UIColor *bottomrightColor = [UIColor colorWithHexString:@"#E0BE8D"];
+    UIImage *bgImg = [UIImage gradientColorImageFromColors:@[topleftColor, bottomrightColor] gradientType:GradientTypeLeftToRight imgSize:self.navigationController.navigationBar.size];
+    [self.navigationController.navigationBar setTitleTextAttributes:@{
+                                                                      NSForegroundColorAttributeName:[UIColor colorWithHexString:@"#101010"],
+                                                        NSFontAttributeName:[UIFont fontWithName:@"PingFangSC-Medium" size:18],
+                                                                      NSShadowAttributeName:shadow
+                                                                      }];
+    [self.navigationController.navigationBar setBackgroundImage:bgImg forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+    
+}
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    NSShadow *shadow = [[NSShadow alloc] init];
+    shadow.shadowOffset = CGSizeZero;
+    [self.navigationController.navigationBar setTitleTextAttributes:@{
+                                                                      NSForegroundColorAttributeName:YBLColor(40, 40, 40, 1.0),
+                                                                      NSFontAttributeName:[UIFont systemFontOfSize:17],
+                                                                      NSShadowAttributeName:shadow
+                                                                      }];
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage createImageWithColor:YBLColor(255, 255, 255, 1) frame:CGRectMake(0, 0, YBLWindowWidth, kNavigationbarHeight)] forBarMetrics:UIBarMetricsDefault];//alpha 0.99
+    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+    
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"店铺详情";

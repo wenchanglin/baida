@@ -13,6 +13,7 @@
 /**主数据分类*/
 -(RACSignal *)mainDataSignalWithID:(NSInteger)ID;
 -(RACSignal *)exchangeGiftSignalWithNum:(NSInteger)num WithID:(NSInteger)giftId;
+-(RACSignal *)exchangeGiftSignalWithgainid:(NSInteger)gainid WithID:(NSInteger)giftId;
 
 @property (nonatomic, strong) NSMutableDictionary *cell_data_dict;
 @end

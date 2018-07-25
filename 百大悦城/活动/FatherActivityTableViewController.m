@@ -10,120 +10,108 @@
 #import "MJRefresh.h"
 #import "WCLActivityModel.h"
 #import "WCLActivityCell.h"
-#import "WCLActivityDetailVC.h"
+#import "WCLMineActivityViewController.h"
+#import "WCLSureSignUpVC.h"
+#import "WCLActivityH5VC.h"
+#import <UIScrollView+EmptyDataSet.h>
 @interface FatherActivityTableViewController ()
 @property(nonatomic,assign)BOOL didEndDecelerating;
+@property(nonatomic,strong) NSString * string1;
+
 @end
 
 @implementation FatherActivityTableViewController
 {
     NSMutableArray * bannerArr;
-    UIView *bgNoDingView;   //没有订单界面底层
-
+    UIView *bgNoDingView;   //没有订单界面底层z
+    NSInteger page;
+    NSInteger cshu;
 }
--(void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-//    [self.tableView.mj_header beginRefreshing];
 
-}
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    bannerArr = [NSMutableArray array];
+    page=1;
+    cshu=0;
     [[[[[NSNotificationCenter defaultCenter] rac_addObserverForName:@"gundong" object:nil] map:^id(NSNotification *value) {
         return value.userInfo;
     }] distinctUntilChanged] subscribeNext:^(id x) {
        self.ID =[[x stringForKey:@"gundongId"]integerValue];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if (self.ID ==self.view.tag) {
+                [self.tableView.mj_header beginRefreshing];
+            }
+        });
     }];
-    [self reqestDataForID:_ID];
-   NSUserDefaults * ud =[NSUserDefaults standardUserDefaults];
-    NSDate *  senddate=[NSDate date];
-    NSDateFormatter  *dateformatter=[[NSDateFormatter alloc] init];
-    [dateformatter setDateFormat:@"YYYY/MM/dd - HH:mm:ss"];
-    NSString *  locationString=[dateformatter stringFromDate:senddate];
-    if (![locationString isEqualToString:[ud objectForKey:@"tabbarDate"]]) {
-        //说明是第一次启动
-        [self reqestDataForID:_ID];
-    }
-    [ud setValue:locationString forKey:@"tabbarDate"];
-    [ud synchronize];
+    WEAK
+    [[[NSNotificationCenter defaultCenter]rac_addObserverForName:@"baoming" object:nil]subscribeNext:^(NSNotification * _Nullable x) {
+        STRONG
+        self->page=1;
+        [self->bannerArr removeAllObjects];
+        [self reqestDataForID:self.ID withPageNum:self->page];
+        
+        
+    }];
     self.tableView= [[UITableView alloc]initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
     self.tableView.estimatedSectionHeaderHeight = 0;
     self.tableView.estimatedSectionFooterHeight=0;
     self.tableView.tableFooterView = [[UIView alloc]init];
     __typeof (self) __weak weakSelf = self;
-    self.tableView.header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
         // 进入刷新状态后会自动调用这个block
-        [weakSelf delayInSeconds:1.0 block:^{
-            [self reqestDataForID:weakSelf.ID];
-            [weakSelf.tableView.header endRefreshing];
+            self->page=1;
+            [self->bannerArr removeAllObjects];
+            [self reqestDataForID:weakSelf.ID withPageNum:self->page];
+            [weakSelf.tableView.mj_header endRefreshing];
             [weakSelf.tableView reloadData];
-         }];
     }];
-    self.tableView.footer = [MJRefreshBackNormalFooter footerWithRefreshingBlock:^{
-        // 进入刷新状态后会自动调用这个block
-        [weakSelf delayInSeconds:1.0 block:^{
-            weakSelf.itemNum += 4;
-            [weakSelf.tableView.footer endRefreshing];
-            [weakSelf.tableView reloadData];
-        }];
-    }];
+     [self.tableView.mj_header beginRefreshing];
+  
 }
--(void)reqestDataForID:(NSInteger)ID
+-(void)reqestDataForID:(NSInteger)ID withPageNum:(NSInteger)page
 {
+    WEAK
     NSMutableDictionary * params = [NSMutableDictionary dictionary];
-    [SVProgressHUD showWithStatus:@"加载中"];
-    params[@"organizeId"] = @"2";//responseObject[@"data"][@"organizeId"];
     params[@"tagId"] = @(ID);
+    params[@"pageNum"] = @(page);
     [[wclNetTool sharedTools]request:GET urlString:URL_ActivityList parameters:params finished:^(id responseObject, NSError *error) {
-        [SVProgressHUD dismissWithDelay:1];
-//        WCLLog(@"%@",responseObject);
-        if ([responseObject[@"data"] count]>0) {
-            bannerArr = [WCLActivityModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
-            [self.tableView reloadData];
-        }
-        else
-        {
-            [self createViewNoDD];
-        }
-        
+        STRONG
+            NSMutableArray* activityArr = [WCLActivityModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+            for (WCLActivityModel*models in activityArr) {
+                [self->bannerArr addObject:models];
+            }
+            if ([responseObject[@"page"][@"pages"]integerValue]>self->page) {
+                self.tableView.mj_footer = [MJRefreshBackNormalFooter footerWithRefreshingBlock:^{
+                    // 进入刷新状态后会自动调用这个block
+                    self->page +=1;
+                    [self reqestDataForID:ID withPageNum:self->page];
+                    [self.tableView.mj_footer endRefreshing];
+                   
+                }];
+            }
+            else if([responseObject[@"page"][@"pages"]integerValue]<=self->page)
+            {
+                self.tableView.mj_footer.hidden=YES;
+                [self.tableView.mj_header endRefreshing];
+            }
+         [self.tableView reloadData];
     }];
 }
--(void)createViewNoDD    // 创建没有订单界面
-{
-    bgNoDingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH , SCREEN_HEIGHT - 41 - 64)];
-    [bgNoDingView setBackgroundColor:[UIColor whiteColor]];
-    [self.view addSubview:bgNoDingView];
-    
-    UIImageView *NoDD = [UIImageView new];
-    [bgNoDingView addSubview:NoDD];
-    NoDD.sd_layout
-    .centerXEqualToView(bgNoDingView)
-    .topSpaceToView(bgNoDingView, 120)
-    .widthIs(211)
-    .heightIs(220);
-    [NoDD setImage:[UIImage imageNamed:@"HaveNoOrder"]];
-    
-    
-    UIButton *clickToLookOther = [UIButton new];
-    [bgNoDingView addSubview:clickToLookOther];
-    
-    clickToLookOther.sd_layout
-    .centerXEqualToView(bgNoDingView)
-    .topSpaceToView(NoDD, 20)
-    .widthIs(80)
-    .heightIs(35);
-    [clickToLookOther.layer setCornerRadius:3];
-    [clickToLookOther.layer setMasksToBounds:YES];
-    [clickToLookOther setBackgroundColor:[UIColor blackColor]];
-    [clickToLookOther.titleLabel setFont:[UIFont systemFontOfSize:14]];
-    [clickToLookOther setTitle:@"去逛逛" forState:UIControlStateNormal];
-//    [clickToLookOther addTarget:self action:@selector(goToLookClothes) forControlEvents:UIControlEventTouchUpInside];
-}
-- (void)delayInSeconds:(CGFloat)delayInSeconds block:(dispatch_block_t) block
-{
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC),  dispatch_get_main_queue(), block);
-}
+//#pragma mark - 占位图
+//-(UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
+//{
+//    return [UIImage imageNamed:@"noactivityplace"];
+//}
+//- (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView {
+//    NSString *title = @"暂无活动";
+//    NSDictionary *attributes = @{
+//                                 NSFontAttributeName:[UIFont boldSystemFontOfSize:18.0f],
+//                                 NSForegroundColorAttributeName:[UIColor colorWithHexString:@"#A4C9EE"]
+//                                 };
+//    return [[NSAttributedString alloc] initWithString:title attributes:attributes];
+//}
 
 #pragma mark - Table view data source
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -167,22 +155,100 @@
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSString * hash =[[NSUserDefaults standardUserDefaults]objectForKey:@"hash"];
+    NSString * organizeId =[[NSUserDefaults standardUserDefaults]objectForKey:@"organizeId"];
     WCLActivityModel * models = bannerArr[indexPath.section];
     WCLActivityCell * cell = [tableView dequeueReusableCellWithIdentifier:@"activitycellsf"];
     if (!cell) {
         cell = [[WCLActivityCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"activitycellsf"];
     }
     cell.models = models;
+    [cell setSignblocks:^(WCLActivityModel*model) {
+        if ([YBLMethodTools checkLoginWithVc:self]) {
+//            WCLSureSignUpVC *svc = [[WCLSureSignUpVC alloc]init];
+//            svc.activityid = [NSNumber numberWithInteger:model.marketingActivitySignupId];
+//            svc.hidesBottomBarWhenPushed =YES;
+//            [self.navigationController pushViewController:svc animated:YES];
+            [YBLMethodTools pushWebVcFrom:self URL:[NSString stringWithFormat:@"%@activity?id=%@&hash=%@&appType=ios&organizeId=%@",URL_H5,@(model.marketingActivitySignupId),hash,organizeId] title:model.activityTitle string:self.string1 type:@"活动详情" buystate:model.memberSignupState activityid:@(model.marketingActivitySignupId)];
+        }
+        
+        
+    }];
+    [cell setBlocks:^(WCLActivityModel*model) {
+         if ([YBLMethodTools checkLoginWithVc:self]) {
+//             WCLMineActivityViewController * mvc = [[WCLMineActivityViewController alloc]init];
+//             [self.navigationController pushViewController:mvc animated:YES];
+             WCLActivityH5VC *vc = [[WCLActivityH5VC alloc]init];
+             vc.url =[NSString stringWithFormat:@"%@activity?id=%@&hash=%@&appType=ios&organizeId=%@",URL_H5,@(models.marketingActivitySignupId),hash,organizeId];
+             vc.navTitle = models.activityTitle;
+             vc.activityid = models.marketingActivitySignupId;
+             vc.buyStates =models.memberSignupState;
+             vc.hidesBottomBarWhenPushed=YES;
+             [self.navigationController pushViewController:vc animated:YES];
+         }
+    }];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     WCLActivityModel * model = bannerArr[indexPath.section];
-    WCLActivityDetailVC * devc = [[WCLActivityDetailVC alloc]init];
-    devc.activityID = model.marketingActivitySignupId;
-    [self.navigationController pushViewController:devc animated:YES];
-//    NSLog(@"你点击了第%@行",@(indexPath.section));
+    WEAK
+    [RACObserve(model, acivityType)subscribeNext:^(id  _Nullable x) {
+        STRONG
+        if ([x isEqualToString:@"NONEED"]) {
+            self.string1 = @"无需报名";
+        }
+        else if ([x isEqualToString:@"FREE"])
+        {
+            self.string1 = @"免费";
+        }
+        else if ([x isEqualToString:@"SCORE"])
+        {
+            self.string1 =[NSString stringWithFormat:@"%@积分报名",model.enrollScore.length>0?model.enrollScore:@"0"];
+        }
+        else if ([x isEqualToString:@"CASH"])
+        {
+            self.string1 = [NSString stringWithFormat:@"¥%@报名",model.enrollFee];
+        }
+    }];
+   
+    NSString * hash =[[NSUserDefaults standardUserDefaults]objectForKey:@"hash"];
+    NSString * organizeId =[[NSUserDefaults standardUserDefaults]objectForKey:@"organizeId"];
+
+        if ([model.memberSignupState isEqualToString:@"已失效"]) {
+            WCLRegisetProtocolVC * pivc = [[WCLRegisetProtocolVC alloc]init];
+            pivc.url =[NSString stringWithFormat:@"%@activity?id=%@&hash=%@&appType=ios&organizeId=%@",URL_H5,@(model.marketingActivitySignupId),hash,organizeId];
+            pivc.navTitle = model.activityTitle;
+            pivc.hidesBottomBarWhenPushed =YES;
+            [self.navigationController pushViewController:pivc animated:YES];
+        }
+        else if ([model.memberSignupState isEqualToString:@"去报名"])
+        {
+            if ([self.string1 isEqualToString:@"无需报名"]) {
+                WCLRegisetProtocolVC * pivc = [[WCLRegisetProtocolVC alloc]init];
+                pivc.url =[NSString stringWithFormat:@"%@activity?id=%@&hash=%@&appType=ios&organizeId=%@",URL_H5,@(model.marketingActivitySignupId),hash,organizeId];
+                pivc.navTitle = model.activityTitle;
+                pivc.hidesBottomBarWhenPushed =YES;
+                [self.navigationController pushViewController:pivc animated:YES];
+            }
+            else
+            {
+            [YBLMethodTools pushWebVcFrom:self URL:[NSString stringWithFormat:@"%@activity?id=%@&hash=%@&appType=ios&organizeId=%@",URL_H5,@(model.marketingActivitySignupId),hash,organizeId] title:@"活动详情" string:self.string1 type:@"活动详情" buystate:model.memberSignupState activityid:@(model.marketingActivitySignupId)];
+            }
+        }
+        else if ([model.memberSignupState isEqualToString:@"去参加"]||[model.memberSignupState isEqualToString:@"待报名"]||[model.memberSignupState isEqualToString:@"已结束"])
+        {
+            
+            WCLActivityH5VC *vc = [[WCLActivityH5VC alloc]init];
+            vc.url =[NSString stringWithFormat:@"%@activity?id=%@&hash=%@&appType=ios&organizeId=%@",URL_H5,@(model.marketingActivitySignupId),hash,organizeId];
+            vc.navTitle = model.activityTitle;
+            vc.activityid = model.marketingActivitySignupId;
+            vc.buyStates =model.memberSignupState;
+            vc.hidesBottomBarWhenPushed=YES;
+            [self.navigationController pushViewController:vc animated:YES];
+        }
+   
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

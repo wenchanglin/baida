@@ -9,6 +9,7 @@
 #import "WCLHomeFuncCell.h"
 #import "WCLHomeFuncCollectionCell.h"
 #import "WCLHomeFuncModel.h"
+#import <SDImageCache.h>
 @implementation WCLHomeFuncCell
 {
     UICollectionView *noThreeCollection;
@@ -17,7 +18,6 @@
 {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         _modelArray = [NSMutableArray array];
-        _funcSubject = [RACSubject subject];
     }
     
     return self;
@@ -74,8 +74,9 @@
     
     WCLHomeFuncModel *deModel = _modelArray[indexPath.item];
     WCLHomeFuncCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"WCLHomeFuncCollectionCell" forIndexPath:indexPath];
-    [cell.positionImage sd_setImageWithURL:[NSURL URLWithString:deModel.functionIco] placeholderImage:[UIImage imageNamed:@"logoImage"]];
-        [cell.nameLabel setText:deModel.functionName];
+    [[SDImageCache sharedImageCache] removeImageForKey:deModel.functionIco withCompletion:nil];
+    [cell.positionImage sd_setImageWithURL:[NSURL URLWithString:deModel.functionIco]];
+    [cell.nameLabel setText:deModel.functionName];
     [cell sizeToFit];
     
     
@@ -88,7 +89,7 @@
 {
     //边距占5*4=20 ，2个
     //图片为正方形，边长：(fDeviceWidth-20)/2-5-5 所以总高(fDeviceWidth-20)/2-5-5 +20+30+5+5 label高20 btn高30 边
-    return CGSizeMake(SCREEN_WIDTH/4, (SCREEN_WIDTH)/4+30);//CGSizeMake(169.5+16, 105+28);
+    return CGSizeMake(SCREEN_WIDTH/4, 110);//CGSizeMake(169.5+16, 105+28);
 }
 //定义每个UICollectionView 的间距
 -(UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section

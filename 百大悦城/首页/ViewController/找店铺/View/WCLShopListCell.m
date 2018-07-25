@@ -38,12 +38,14 @@
         make.width.height.mas_equalTo(90);
     }];
     _nameLabel = [UILabel new];
+    _nameLabel.numberOfLines=2;
     _nameLabel.font = [UIFont fontWithName:@"SFProText-Medium" size:17];
     _nameLabel.textColor =[UIColor colorWithHexString:@"#1A1A1A"];
     [self.contentView addSubview:_nameLabel];
     [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.backImageView.mas_top).offset(10);
         make.left.equalTo(self.iconImageView.mas_right).offset(8);
+        make.right.equalTo(self.backImageView.mas_right).offset(-10);
     }];
     _subLabel = [UILabel new];
     _subLabel.font = [UIFont fontWithName:@"PingFangSC-Regular" size:12];
@@ -90,12 +92,18 @@
 -(void)setModel:(WCLFindShopModel *)model
 {
     _model = model;
-    [_iconImageView sd_setImageWithURL:[NSURL URLWithString:model.shopPicture]];
+    [_iconImageView sd_setImageWithURL:[NSURL URLWithString:model.shopLogo] placeholderImage:HeadPlaceHolder];
     _nameLabel.text = model.shopName;
     for (NSDictionary * dict in model.industryList) {
         _subLabel.text = [dict stringForKey:@"industryName"];
     }
-    _floorLabel.text = model.floorName;
+    if (model.berthNo.length>0) {
+        _floorLabel.text =[NSString stringWithFormat:@"%@-%@",model.floorName,model.berthNo];
+    }
+    else
+    {
+        _floorLabel.text =model.floorName;
+    }
     if ([model.isScoreShop isEqualToString:@"N"]) {
 //        WCLLog(@"不支持会员卡");
         _smallIcon.hidden=YES;

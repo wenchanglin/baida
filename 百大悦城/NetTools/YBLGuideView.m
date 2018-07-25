@@ -15,6 +15,7 @@ static YBLGuideView *guideView = nil;
 @property (nonatomic, strong) UIScrollView *contentScrollView;
 
 @property (nonatomic, strong) NSMutableArray *dataArray;
+@property (nonatomic, strong) UIPageControl *pageControl;
 
 @property (nonatomic, copy  ) GuideViewDoneBlock doneBlock;
 
@@ -65,19 +66,37 @@ static YBLGuideView *guideView = nil;
         guideImageView.frame = [self.contentScrollView bounds];
         guideImageView.left = index*self.contentScrollView.width;
         [self.contentScrollView addSubview:guideImageView];
-        
+        guideImageView.userInteractionEnabled = YES;
+
+
         if (index == _dataArray.count-1) {
-            guideImageView.userInteractionEnabled = YES;
-            UITapGestureRecognizer *imageClick = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(lastImageViewClick:)];
-            [guideImageView addGestureRecognizer:imageClick];
+            UIButton *startBtn = [[UIButton alloc]initWithFrame:CGRectMake(self.center.x, self.frame.size.height*.8, 150.0f, 40.0f)];
+            startBtn.center = CGPointMake(self.center.x, self.frame.size.height*.8);
+            startBtn.layer.cornerRadius = 5.0f;
+            startBtn.layer.masksToBounds = YES;
+            startBtn.titleLabel.font = [UIFont systemFontOfSize:17.0f];
+            startBtn.backgroundColor = [UIColor brownColor];
+            [startBtn setTitle:@"立即开启" forState:UIControlStateNormal];
+            [startBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            [startBtn addTarget:self action:@selector(lastImageViewClick:) forControlEvents:UIControlEventTouchUpInside];
+            [guideImageView addSubview:startBtn];
             self.contentScrollView.contentSize = CGSizeMake(guideImageView.right, self.contentScrollView.height);
+
+        }
+        _pageControl = [[UIPageControl alloc]initWithFrame:CGRectMake(SCREEN_WIDTH/2-40.0f, SCREEN_HEIGHT-40.0f, 80.0f, 10.0f)];
+        [self addSubview:_pageControl];
+        _pageControl.enabled = YES;
+        _pageControl.numberOfPages = 3;
+        _pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
+        _pageControl.currentPageIndicatorTintColor = [UIColor redColor];
+    
         }
         
         index++;
-    }
+    
 }
 
-- (void)lastImageViewClick:(UITapGestureRecognizer *)tap {
+- (void)lastImageViewClick:(UIButton *)tap {
 	
     [self dismissMethod];
 }
@@ -112,5 +131,12 @@ static YBLGuideView *guideView = nil;
         guideView = nil;
     }];
 }
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    CGFloat scrollViewW = scrollView.width;
+    CGFloat x = scrollView.contentOffset.x;
+    int page = (x + scrollViewW/2)/scrollViewW;
+    _pageControl.currentPage = page;
+}
+
 
 @end

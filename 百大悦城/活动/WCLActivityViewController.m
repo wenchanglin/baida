@@ -18,11 +18,15 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"活动";
+     self.title = @"活动";
     self.viewModel = [[WCLActivityViewModel alloc]init];
     self.homeUIService = [[WCLActivityUIService alloc]initWithVC:self ViewModel:self.viewModel];
 }
-
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+   
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

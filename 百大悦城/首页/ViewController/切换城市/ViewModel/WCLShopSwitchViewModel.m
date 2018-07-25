@@ -8,7 +8,6 @@
 
 #import "WCLShopSwitchViewModel.h"
 #import "WCLShopSwitchModel.h"
-#import "WCLShopSwitchListModel.h"
 @implementation WCLShopSwitchViewModel
 -(instancetype)init
 {
@@ -27,19 +26,29 @@
 -(RACSignal *)mainDataSignal
 {
     RACReplaySubject * subject = [RACReplaySubject subject];
-    [SVProgressHUD showWithStatus:@"加载中"];
+//    [SVProgressHUD showWithStatus:@"加载中"];
     NSMutableDictionary * params = [NSMutableDictionary dictionary];
-    params[@"organizeId"] = @"2";//[[NSUserDefaults standardUserDefaults]objectForKey:@"organizeId"];//@"2";//responseObject[@"data"][@"organizeId"];
     [[wclNetTool sharedTools]request:POST urlString:URL_SwitchShop_List parameters:params finished:^(id responseObject, NSError *error) {
-        [SVProgressHUD dismissWithDelay:1];
-//        WCLLog(@"%@",responseObject);
-        self.leftArr = [WCLShopSwitchModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
-        for (WCLShopSwitchModel* model in self.leftArr) {
-            self.rightArr = [WCLShopSwitchListModel mj_objectArrayWithKeyValuesArray:model.organizeList];
-        }
+//        [SVProgressHUD dismiss];
+//        WCLLog(@"%@",responseObject[@"data"]);
+        if ([[responseObject arrayForKey:@"data"]count]>0) {
+            self.leftArr = [WCLShopSwitchModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+            for (WCLShopSwitchModel* model in self.leftArr) {
+                NSMutableArray * datas = [NSMutableArray array];
+                for (WCLShopSwitchListModel*models in model.organizeList) {
+                    [datas addObject:models];
+                }
+                [self.rightArr addObject:datas];
+            }
             [self.cell_data_dict setObject:self.leftArr forKey:@"左表"];
             [self.cell_data_dict setObject:self.rightArr forKey:@"右表"];
-                [subject sendNext:self.cell_data_dict];
+            [subject sendNext:self.cell_data_dict];
+        }
+        else
+        {
+            [subject sendNext:@(YES)];
+        }
+        [subject sendCompleted];
         
     }];
     return subject;

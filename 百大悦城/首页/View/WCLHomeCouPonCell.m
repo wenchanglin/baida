@@ -47,7 +47,7 @@
     [_couponLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.iconImageView.mas_right).offset(9);
         make.top.equalTo(@19);
-        make.width.mas_equalTo(SCREEN_WIDTH-112);
+        make.right.mas_equalTo(-126);
     }];
     _couponSubLabel = [UILabel new];
     _couponSubLabel.font = [UIFont fontWithName:@"SFProText-Regular" size:16];
@@ -55,7 +55,7 @@
     [_couponSubLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.couponLabel);
         make.top.equalTo(self.couponLabel.mas_bottom).offset(5);
-        make.width.mas_equalTo(SCREEN_WIDTH-112);
+        make.right.mas_equalTo(-126);
     }];
     _couponCountLabel = [UILabel new];
     _couponCountLabel.textAlignment = NSTextAlignmentRight;
@@ -68,14 +68,18 @@
         make.height.mas_equalTo(18);
     }];
     _receiveBtn = [UIButton new];
-    _receiveBtn.layer.cornerRadius=8;
-    _receiveBtn.layer.masksToBounds=YES;
-    _receiveBtn.backgroundColor = [UIColor colorWithHexString:@"#990000"];
+    _receiveBtn.backgroundColor = [UIColor clearColor];
     [self.contentView addSubview:_receiveBtn];
     [_receiveBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.top.right.equalTo(self.backImageView);
         make.width.mas_equalTo(80);
     }];
+    [_receiveBtn layoutIfNeeded];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.receiveBtn.bounds   byRoundingCorners:UIRectCornerBottomRight|UIRectCornerTopRight cornerRadii:CGSizeMake(8, 8)];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame = self.receiveBtn.bounds;
+    maskLayer.path = maskPath.CGPath;
+    self.receiveBtn.layer.mask = maskLayer;
     _receiveLabel = [UILabel new];
     _receiveLabel.numberOfLines=3;
     _receiveLabel.textAlignment = NSTextAlignmentCenter;
@@ -86,73 +90,161 @@
         make.edges.equalTo(self.receiveBtn);
     }];
 }
+
+
 -(void)setModels:(WCLHomeCouPonModel *)models
 {
     _models = models;
-    [_iconImageView sd_setImageWithURL:[NSURL URLWithString:models.couponImage]];
-    _couponLabel.text = models.couponName;
-    _couponSubLabel.text = models.couponDesc;
-    _couponCountLabel.text = [NSString stringWithFormat:@"剩余%@",models.stock];
-   
-    [RACObserve(models, state)subscribeNext:^(id  _Nullable x) {
-        if ([x isEqualToString:@"ROB"]) {
-            self.receiveLabel.text = @"已抢完";
-            self.receiveBtn.backgroundColor =[UIColor colorWithHexString:@"#999999"];
-            self.receiveBtn.enabled=NO;
+    [_iconImageView sd_setImageWithURL:[NSURL URLWithString:models.couponImage] placeholderImage:HeadPlaceHolder];
+    if(models.couponTypeCy ==9)
+    {
+        NSString *jifen ;
+        if ([[WCLUserManageCenter shareInstance].userInfoModel.cardLevel isEqualToString:@"VIP积分卡"]) {
+            float f = models.accessValue*0.015;
+            jifen = [YBLMethodTools formatFloat:f];
+              _couponLabel.text =[NSString stringWithFormat:@"%@元-%@",jifen,models.couponName];
         }
-        else if ([x isEqualToString:@"UNDO"])
+        else if ([[WCLUserManageCenter shareInstance].userInfoModel.cardLevel isEqualToString:@"三星贵宾卡"])
         {
-            self.receiveLabel.text = @"未开始";
-            self.receiveBtn.backgroundColor =[UIColor colorWithHexString:@"#999999"];
-            self.receiveBtn.enabled=NO;
+           float f=models.accessValue *0.02;
+            jifen = [YBLMethodTools formatFloat:f];
+              _couponLabel.text =[NSString stringWithFormat:@"%@元-%@",jifen,models.couponName];
         }
-        else if ([x isEqualToString:@"RECEIVE"])
+        else if([[WCLUserManageCenter shareInstance].userInfoModel.cardLevel isEqualToString:@"五星贵宾卡"])//
         {
-            self.receiveLabel.text = @"已领";
-            self.receiveBtn.backgroundColor =[UIColor colorWithHexString:@"#999999"];
-            self.receiveBtn.enabled=NO;
+            float f = models.accessValue*0.03;
+            jifen = [YBLMethodTools formatFloat:f];
+              _couponLabel.text =[NSString stringWithFormat:@"%@元-%@",jifen,models.couponName];
         }
-        else if ([x isEqualToString:@"FREE"])
+        else
         {
-            self.receiveLabel.text = @"免费抢";
-            self.receiveBtn.backgroundColor =[UIColor colorWithHexString:@"#999999"];
-            [RACObserve(models, stock) subscribeNext:^(id  _Nullable x) {
-                if (x==0) {
-                    self.receiveBtn.enabled=NO;
-                }
-                else
-                {
-                    self.receiveBtn.enabled =YES;
-                    self.receiveBtn.rac_command = [[RACCommand alloc]initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
-                        WCLLog(@"免费抢%@",input);
-                        return [RACSignal empty];
-                        
-                    }];
-                }
-            }];
-        }
-        else if ([x isEqualToString:@"POINTS"])
-        {
-            self.receiveLabel.text = [NSString stringWithFormat:@"%@积分领取",@(models.needScore)];
-            [RACObserve(models, stock) subscribeNext:^(id  _Nullable x) {
-                if (x==0) {
-                    self.receiveBtn.enabled=NO;
-                    self.receiveBtn.backgroundColor =[UIColor colorWithHexString:@"#999999"];
+            float f = models.accessValue*0.015;
+            jifen = [YBLMethodTools formatFloat:f];
+            _couponLabel.text =[NSString stringWithFormat:@"%@元-%@",jifen,models.couponName];
 
-                }
-                else
-                {
-                    self.receiveBtn.enabled =YES;
+        }
+      
+
+    }
+    else
+    {
+        _couponLabel.text = [NSString stringWithFormat:@"%@元-%@",@(models.couponValue),models.couponName];
+    }
+    if ([models.couponTypeKind isEqualToString:@"VOUCHER"]) {
+        _couponSubLabel.text = [NSString stringWithFormat:@"满%@元可用,限%@",models.serviceAmount.length>0?models.serviceAmount:@"0",[[models.listCouponShop firstObject] stringForKey:@"shopName"]];
+    }
+    else
+
+    {
+        _couponSubLabel.text = models.couponDesc;
+    }
+    _couponCountLabel.text = [NSString stringWithFormat:@"剩余%@",@(models.balanceNum)];
+    if ([models.accessType isEqualToString:@"POINT"]) {
+        if (models.balanceNum>0) {
+            if(models.limitNum!=0)
+            {
+            if (models.memberBroughtNum ==models.limitNum) {
+                self.receiveLabel.text =@"已领取";
+                self.receiveBtn.backgroundColor =[UIColor colorWithHexString:@"#999999"];
+                self.receiveBtn.enabled=YES;
+                self.receiveBtn.rac_command = [[RACCommand alloc]initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
+                    self.pointsBlock(models);
+                    return [RACSignal empty];
+                }];
+            }
+            else
+            {
+                if (models.couponTypeCy==9) {
+                  
+                    self.receiveLabel.text=[NSString stringWithFormat:@"%@积分领取",@(models.accessValue)];
                     self.receiveBtn.backgroundColor = [UIColor colorWithHexString:@"#990000"];
+                    self.receiveBtn.enabled=YES;
                     self.receiveBtn.rac_command = [[RACCommand alloc]initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
-                        WCLLog(@"%@",input);
+                        self.fanliBlock(models,[NSString stringWithFormat:@"%@",@(models.accessValue)]);
                         return [RACSignal empty];
-
                     }];
-
                 }
+                else
+                {
+                self.receiveLabel.text =[NSString stringWithFormat:@"%@积分领取",@(models.accessValue)];
+                self.receiveBtn.backgroundColor = [UIColor colorWithHexString:@"#990000"];
+                self.receiveBtn.enabled=YES;
+                self.receiveBtn.rac_command = [[RACCommand alloc]initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
+                    self.pointsBlock(models);
+                    return [RACSignal empty];
+                }];
+                }
+            }
+        }
+            else
+            {
+                self.receiveLabel.text =[NSString stringWithFormat:@"%@积分领取",@(models.accessValue)];
+                self.receiveBtn.backgroundColor = [UIColor colorWithHexString:@"#990000"];
+                self.receiveBtn.enabled=YES;
+                self.receiveBtn.rac_command = [[RACCommand alloc]initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
+                    self.pointsBlock(models);
+                    return [RACSignal empty];
+                }];
+            }
+        }
+        else
+        {
+            self.receiveLabel.text = @"已抢光";
+            self.receiveBtn.backgroundColor =[UIColor colorWithHexString:@"#E6E9F2"];
+            self.receiveBtn.enabled=NO;
+        }
+
+    }
+    else if ([models.accessType isEqualToString:@"BUY"])
+    {
+
+    }
+    else if([models.accessType isEqualToString:@"FREE"])
+    {
+        if (models.balanceNum>0) {
+            if (models.limitNum!=0) {
+                if (models.memberBroughtNum ==models.limitNum) {
+                self.receiveLabel.text =[NSString stringWithFormat:@"已领取"];
+                self.receiveBtn.backgroundColor =[UIColor colorWithHexString:@"#999999"];
+                    self.receiveBtn.enabled=YES;
+                    self.receiveBtn.rac_command = [[RACCommand alloc]initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
+                        self.freeBlock(models);
+                        return [RACSignal empty];
+                    }];
+            }
+            else
+            {
+                self.receiveLabel.text =@"免费领取";
+                self.receiveBtn.backgroundColor = [UIColor colorWithHexString:@"#990000"];
+                self.receiveBtn.enabled=YES;
+                self.receiveBtn.rac_command = [[RACCommand alloc]initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
+                    self.freeBlock(models);
+                    return [RACSignal empty];
+                }];
+            }
+            }
+            else
+            {
+                self.receiveLabel.text =@"免费领取";
+                self.receiveBtn.backgroundColor = [UIColor colorWithHexString:@"#990000"];
+                self.receiveBtn.enabled=YES;
+                self.receiveBtn.rac_command = [[RACCommand alloc]initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
+                    self.freeBlock(models);
+                    return [RACSignal empty];
+                }];
+            }
+        }
+        else
+        {
+            self.receiveLabel.text = @"已抢光";
+            self.receiveBtn.backgroundColor =[UIColor colorWithHexString:@"#999999"];
+            self.receiveBtn.enabled=YES;
+            self.receiveBtn.rac_command = [[RACCommand alloc]initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
+                self.freeBlock(models);
+                return [RACSignal empty];
             }];
         }
-    }];
+    }
+
 }
 @end

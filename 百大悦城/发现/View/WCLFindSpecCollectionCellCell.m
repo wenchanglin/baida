@@ -22,21 +22,25 @@
     UIView *contentView = self.contentView;
     _bgView = [UIImageView new];
     [contentView addSubview:_bgView];
-    
-    _bgView.sd_layout
-    .leftEqualToView(contentView)
-    .rightEqualToView(contentView)
-    .topEqualToView(contentView)
-    .bottomEqualToView(contentView);
+    [_bgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(contentView);
+    }];
     
     _imgView = [UIImageView new];
     _imgView.backgroundColor= [UIColor lightGrayColor];
+    _imgView.contentMode = UIViewContentModeScaleAspectFill;
+    _imgView.clipsToBounds=YES;
     [_bgView addSubview:_imgView];
-    _imgView.sd_layout
-    .leftSpaceToView(_bgView,6)
-    .topSpaceToView(_bgView, 15)
-    .rightSpaceToView(_bgView, 6)
-    .bottomSpaceToView(_bgView, 60);
+    [_imgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.bgView.mas_top).offset(15);
+        make.left.equalTo(self.bgView.mas_left).offset(6);
+        make.width.height.mas_equalTo(170);
+    }];
+//    _imgView.sd_layout
+//    .leftSpaceToView(_bgView,6)
+//    .topSpaceToView(_bgView, 15)
+//    .rightSpaceToView(_bgView, 6)
+//    .bottomSpaceToView(_bgView, 60);
     [_imgView setContentMode:UIViewContentModeScaleAspectFill];
     [_imgView.layer setMasksToBounds:YES];
     
@@ -51,7 +55,6 @@
     }];
     
     _tagLabel = [UILabel new];
-    _tagLabel.textAlignment= NSTextAlignmentCenter;
     _tagLabel.font =[UIFont systemFontOfSize:13];
     [_tagLabel setTextColor:[UIColor colorWithHexString:@"#990000"]];
     [_bgView addSubview:_tagLabel];
@@ -61,7 +64,6 @@
         make.height.mas_equalTo(15);
     }];
     _oldTagLabel = [UILabel new];
-    _oldTagLabel.textAlignment= NSTextAlignmentCenter;
     _oldTagLabel.font = [UIFont systemFontOfSize:10];
     [_oldTagLabel setTextColor:[UIColor colorWithHexString:@"#999999"]];
     [_bgView addSubview:_oldTagLabel];
@@ -87,7 +89,7 @@
     _titleLabel.text = models.commodityName;
     _tagLabel.text =[NSString stringWithFormat:@"¥%@",models.nowPrice];
     NSDictionary *attribtDic = @{NSStrikethroughStyleAttributeName: [NSNumber numberWithInteger:NSUnderlineStyleSingle]};
-    NSMutableAttributedString *attribtStr = [[NSMutableAttributedString alloc]initWithString:models.oldPrice attributes:attribtDic];
+    NSMutableAttributedString *attribtStr = [[NSMutableAttributedString alloc]initWithString:[NSString stringWithFormat:@"¥%@",models.oldPrice] attributes:attribtDic];
     _oldTagLabel.attributedText = attribtStr;
 }
 @end

@@ -15,5 +15,8 @@ typedef NS_ENUM(NSInteger)
 @interface wclNetTool : AFHTTPSessionManager
 + (instancetype) sharedTools;
 - (void) request:(HTTPMethod)method urlString:(NSString *)urlString  parameters:(NSMutableDictionary *)parameters finished:(void(^)(id responseObject,NSError * error))finished;
-
+-(void)updateRequest:(NSString *)url
+               params:(NSMutableDictionary *)params
+      fileConfigArray:(NSMutableArray *)fileConfigArray
+              finished:(void(^)(id responseObject,NSError * error))finished;
 @end

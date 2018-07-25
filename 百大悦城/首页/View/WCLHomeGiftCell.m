@@ -40,6 +40,7 @@
     giftCollection = [[UICollectionView alloc]initWithFrame:CGRectZero//CGRectMake(8, 0, SCREEN_WIDTH - 16,self.height)
         collectionViewLayout:flowLayout];
     //设置代理
+    giftCollection.scrollEnabled =NO;
     giftCollection.showsHorizontalScrollIndicator = NO;
     giftCollection.delegate = self;
     giftCollection.dataSource = self;
@@ -95,7 +96,7 @@
 {
     //边距占5*4=20 ，2个
     //图片为正方形，边长：(fDeviceWidth-20)/2-5-5 所以总高(fDeviceWidth-20)/2-5-5 +20+30+5+5 label高20 btn高30 边
-    return CGSizeMake(SCREEN_WIDTH / 2 - 8, 230);//CGSizeMake(169.5+16, 105+28);
+    return CGSizeMake(SCREEN_WIDTH / 2 - 8,240);//CGSizeMake(169.5+16, 105+28);
 }
 //定义每个UICollectionView 的间距
 -(UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
@@ -109,11 +110,12 @@
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     
-    //    WCLHomeFuncModel * demodels =_modelArray[indexPath.item];
+        WCLHomeGiftModel * demodels =_giftModelArray[indexPath.item];
     //    NSMutableDictionary * dict = [NSMutableDictionary dictionary];
     //    [dict setObject:demodels forKey:[NSString stringWithFormat:@"%@",@(indexPath.item)]];
     //    [_funcSubject sendNext:dict];
     //
+    self.giftSelectBlock(demodels.objectId);
 //    [self.delegate homeFuncClick:indexPath.item];
 }
 @end

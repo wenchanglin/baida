@@ -10,6 +10,9 @@
 
 @interface WCLHomeViewModel : NSObject
 @property(nonatomic,strong) NSMutableArray * mainArr;
+@property(nonatomic,strong) NSMutableArray * mallFloorArr;
+@property (nonatomic, strong) NSMutableDictionary *mallfloor_cell_data_dict;
+
 /**主数据分类*/
 @property (nonatomic, strong) RACSignal           *mainDataSignal;
 
@@ -18,12 +21,12 @@
  */
 @property (nonatomic, strong) RACSignal           *bannerAndZhengWenSignal;
 /**
- *  设计师作品和店铺Signal
+ *  室内导航Signal
  */
-@property (nonatomic, strong) RACSignal           *designerAndDianPuSiganl;
+@property (nonatomic, strong) RACSignal           *mallfloorSiganl;
 /**
  *  正文Signal
  */
-- (RACSignal *)siganlForProductRecommend;
+-(RACSignal *)siganlForexchangeByPointsWithCouponId:(NSInteger)couponid withcyCouponId:(NSInteger)cyCouponId withExchangeValue:(NSString*)exchange;
 @property (nonatomic, strong) NSMutableDictionary *cell_data_dict;
 @end

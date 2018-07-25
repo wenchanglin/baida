@@ -10,7 +10,8 @@
 #import "WCLNavigationViewController.h"
 #import "WCLHomeViewController.h"
 #import "WCLActivityViewController.h"
-#import "WCLFindViewController.h"
+#import "WCLGoodsViewController.h"
+#import "PageViewController.h"
 #import "WCLMineViewController.h"
 @interface WCLTabBarViewController ()
 
@@ -32,25 +33,20 @@
 - (void)addAllChildVcs
 {
     WCLHomeViewController *home = [[WCLHomeViewController alloc] init];
-    WCLNavigationViewController *nav1 = [[WCLNavigationViewController alloc] initWithRootViewController:home];
+    UINavigationController *nav1 = [[UINavigationController alloc] initWithRootViewController:home];
     [self addOneChlildVc:nav1 title:@"首页" imageName:@"tabBar_home_normal" selectedImageName:@"tabBar_home_press"];
     WCLActivityViewController * activity =[[WCLActivityViewController alloc]init];
     WCLNavigationViewController *nav2 = [[WCLNavigationViewController alloc] initWithRootViewController:activity];
     [self addOneChlildVc:nav2 title:@"活动" imageName:@"tabBar_activity_normal" selectedImageName:@"tabBar_activity_press"];
-    WCLFindViewController * find =[[WCLFindViewController alloc]init];
-//    WCLNavigationViewController *nav3 = [[WCLNavigationViewController alloc] initWithRootViewController:find];
-    [self addOneChlildVc:find title:@"发现" imageName:@"tabBar_find_normal" selectedImageName:@"tabBar_find_press"];
+//    WCLGoodsViewController * find= [[WCLGoodsViewController alloc]init];
+//    WCLNavigationViewController*nav3 = [[WCLNavigationViewController alloc]initWithRootViewController:find];
+//    PageViewController *pageViewController = [[PageViewController alloc] initWithTransitionStyle: UIPageViewControllerTransitionStyleScroll
+//        navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
+//    UINavigationController* nvcsdf = [[UINavigationController alloc]initWithRootViewController:pageViewController];
+//    [self addOneChlildVc:nav3 title:@"发现" imageName:@"tabBar_find_normal" selectedImageName:@"tabBar_find_press"];
     WCLMineViewController * mine =[[WCLMineViewController alloc]init];
-    [self addOneChlildVc:mine title:@"我的" imageName:@"tabBar_my_normal" selectedImageName:@"tabBar_my_press"];
-    
-//    YBLCategoryViewController *category = [[YBLCategoryViewController alloc] init];
-//    //    category.viewModel = category_viewModel;
-//    [self addOneChlildVc:category title:@"分类" imageName:@"tabBar_category_normal" selectedImageName:@"tabBar_category_press"];
-    
-
-//
-//    YBLProfileViewController *me = [[YBLProfileViewController alloc] init];
-//    [self addOneChlildVc:me title:@"我的" imageName:@"tabBar_my_normal" selectedImageName:@"tabBar_my_press"];
+    UINavigationController * mnav = [[UINavigationController alloc]initWithRootViewController:mine];
+    [self addOneChlildVc:mnav title:@"我的" imageName:@"tabBar_my_normal" selectedImageName:@"tabBar_my_press"];
 }
 
 /**
@@ -70,7 +66,7 @@
     childVc.tabBarItem.selectedImage = selectedImage;
     
     //调整tabbarItem  图片的位置
-    [childVc.tabBarItem setImageInsets:UIEdgeInsetsMake(6, 0, -6, 0)];
+//    [childVc.tabBarItem setImageInsets:UIEdgeInsetsMake(6, 0, -6, 0)];
     [childVc.tabBarItem setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor blackColor]} forState:UIControlStateSelected];
     [childVc.tabBarItem setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor colorWithHexString:@"#999999"]} forState:UIControlStateNormal];
     // 添加为tabbar控制器的子控制器

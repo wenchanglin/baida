@@ -126,7 +126,10 @@ typedef struct {
                 completion:(void (^ )(BOOL finished))completion;
 
 + (void)callWithNumber:(NSString *)number;
-
+/**转换时间为昨天，今天*/
++ (NSString *)formateDate:(NSString *)dateString withFormate:(NSString *) formate;
+/**某个时间转成时间戳*/
++(NSInteger)timeSwitchTimestamp:(NSString *)formatTime andFormatter:(NSString *)format;
 + (UIButton *)getContactKefuButtonWithFrame:(CGRect)frame;
 
 + (UIButton *)getNextButtonWithFrame:(CGRect)frame;
@@ -152,7 +155,7 @@ typedef struct {
 + (void)pushVc:(UIViewController *)Vc withNavigationVc:(UINavigationController *)navigationVc;
 
 + (void)popVc:(UIViewController *)Vc withNavigationVc:(UINavigationController *)navigationVc;
-
++(CGRect)jisuanTextHeightForString:(NSString *)string withWidth:(CGFloat)width withFont:(UIFont*)font;
 + (NSString *)dateTimeDifferenceWithEndTime:(NSString *)endTime;
 
 + (NSString *)diffDayOf:(NSString *)beginTime andEndTime:(NSString*)endTime;
@@ -164,24 +167,14 @@ typedef struct {
 + (void)footerRefreshWithTableView:(id )view completion:(void (^)(void))completion;
 
 + (void)footerAutoRefreshWithTableView:(id )view completion:(void (^)(void))completion;
++ (void)footerNormalRefreshWithTableView:(id )view completion:(void (^)(void))completion;
 
 +(int)compareOneDay:(NSDate *)oneDay withAnotherDay:(NSDate *)anotherDay dateFormatter:(NSDateFormatter *)dateFormatter;
 
-+ (int)getBaozhengJINWithCount:(NSInteger)count Price:(float)price;
 
-+ (UIColor *)getPurchaseOrderStatusBGColorWithAasmState:(NSString *)aasm_state;
 
-+ (NSString *)getPurchaseOrderStatusTitleWithAasmState:(NSString *)aasm_state;
 
-+ (PurchaseOrderType)getPurchaseOrderTypeWithAasmState:(NSString *)aasm_state;
 
-+ (NSString *)getPurchaseOrderStatusButtonTitleWithAasmState:(NSString *)aasm_state;
-
-+ (NSString *)getOrderButtonAction:(NSString *)currentTitle;
-
-+ (NSString *)getOrderTypeTitleWithState:(NSString *)state;
-
-+ (NSString *)getOrderTypeButtonTitleWithState:(NSString *)state;
 
 + (BOOL)popToFoundVCFrom:(UIViewController *)fromeVC;
 
@@ -208,6 +201,7 @@ typedef struct {
 + (void)cleanImageCach;
 
 + (BOOL)checkLoginWithVc:(UIViewController *)Vc;
++(NSString *)formatFloat:(float)f;
 
 + (UIButton *)getButtonWithImage:(NSString *)imageName;
 
@@ -216,7 +210,7 @@ typedef struct {
 /********   New Method  ********/
 + (YBLOrderPropertyModel *)buyerOrderStateWith:(NSString *)state;
 + (YBLOrderPropertyModel *)sellerOrderStateWith:(NSString *)state;
-
++(BOOL)judgePassWordLegal:(NSString *)pass;
 + (BOOL)checkPhone:(NSString *)phoneNumber;
 + (BOOL)checkEmail:(NSString *)email;
 + (BOOL)checkIsChinese:(NSString *)string;
@@ -226,7 +220,7 @@ typedef struct {
 + (NSString *)getAppendingTitleStringWithArray:(NSArray *)array appendingKey:(NSString *)key;
 + (NSString *)getAppendingShippingmentTitleStringWithArray:(NSArray *)array appendingKey:(NSString *)key;
 + (NSString *)getAppendingPaymentTitleStringWithArray:(NSArray *)array appendingKey:(NSString *)key;
-+ (void)pushWebVcFrom:(UIViewController *)Vc URL:(NSString *)URL title:(NSString *)title;
++ (void)pushWebVcFrom:(UIViewController *)Vc URL:(NSString *)URL title:(NSString *)title string:(NSString*)string type:(NSString*)type buystate:(NSString*)state activityid:(NSNumber*)huodongid;
 + (NSString *)replaceNYRDataStringWith:(NSString *)dataString;
 + (void)cleanNotificationNumber;
 
@@ -245,4 +239,5 @@ typedef struct {
 + (BOOL)isPureInt:(NSString*)string;
 + (BOOL)isPureFloat:(NSString*)string;
 + (NSString*)getTimeNow;
++(void)drawLineOfDashByCAShapeLayer:(UIView *)lineView lineLength:(int)lineLength lineSpacing:(int)lineSpacing lineColor:(UIColor *)lineColor lineDirection:(BOOL)isHorizonal;
 @end

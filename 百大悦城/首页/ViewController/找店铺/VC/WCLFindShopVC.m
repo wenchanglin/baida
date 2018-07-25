@@ -15,10 +15,15 @@
 @end
 
 @implementation WCLFindShopVC
-
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [self.findShopService.dropMenu rightNowDismis];
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"找店铺";
+    [self.navigationController.navigationBar setTitleTextAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:18],NSForegroundColorAttributeName:[UIColor blackColor]}];
     self.viewModel = [[WCLFindShopViewModel alloc]init];
     self.findShopService = [[WCLFindShopService alloc]initWithVC:self ViewModel:self.viewModel];
 }

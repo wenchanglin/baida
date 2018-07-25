@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "WCLShopSwitchListModel.h"
+#import "WCLShopSwitchModel.h"
 @interface WCLShopSwitchRightCell : UITableViewCell
 @property(nonatomic,strong)UIImageView * backImgView;
 @property(nonatomic,strong)UILabel * nameLabel;

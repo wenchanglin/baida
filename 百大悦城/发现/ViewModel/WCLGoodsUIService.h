@@ -7,6 +7,7 @@
 //
 
 #import "WCLBaseService.h"
+#import "WCLGoodsModel.h"
 
 @interface WCLGoodsUIService : WCLBaseService
 @property (nonatomic, strong) UITableView *homeTableView;

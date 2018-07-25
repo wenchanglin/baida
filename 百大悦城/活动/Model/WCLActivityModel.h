@@ -20,6 +20,7 @@
 @property(nonatomic,assign)NSInteger creatorId;
 @property(nonatomic,strong)NSString* endTime;
 @property(nonatomic,strong)NSString* endTimeStr;
+@property(nonatomic,strong)NSString*signupTime;
 @property(nonatomic,assign)NSString* enrollFee;//现金
 @property(nonatomic,assign)NSString* enrollScore;//积分
 @property(nonatomic,strong)NSString* extraIntroduce;

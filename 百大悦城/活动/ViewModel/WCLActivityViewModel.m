@@ -26,18 +26,27 @@
 -(RACSignal *)activityDataSignal
 {
     RACReplaySubject * subject = [RACReplaySubject subject];
-    [SVProgressHUD showWithStatus:@"加载中"];
     NSMutableDictionary * params = [NSMutableDictionary dictionary];
-    params[@"organizeId"] =@"2";//[[NSUserDefaults standardUserDefaults]objectForKey:@"organizeId"];
     [[wclNetTool sharedTools]request:POST urlString:URL_ActivityList parameters:params finished:^(id responseObject, NSError *error) {
-        [SVProgressHUD dismissWithDelay:1];
-        for (NSDictionary* tagdict  in responseObject[@"tagList"]) {
-            [self.tagListArr addObject:[tagdict stringForKey:@"tagName"]];
-            [self.tagIdArr addObject:[tagdict stringForKey:@"id"]];
+        if (error) {
+            [subject sendNext:@0];
         }
-        [self.cell_data_dict setObject:self.tagListArr forKey:@"活动标签"];
-        [self.cell_data_dict setObject:self.tagIdArr forKey:@"活动标签ID"];
-        [subject sendNext:self.cell_data_dict];
+        else
+        {
+            if ([responseObject[@"tagList"]count]>0) {
+                for (NSDictionary* tagdict  in responseObject[@"tagList"]) {
+                    [self.tagListArr addObject:[tagdict stringForKey:@"tagName"]];
+                    [self.tagIdArr addObject:[tagdict stringForKey:@"id"]];
+                }
+                [self.cell_data_dict setObject:self.tagListArr forKey:@"活动标签"];
+                [self.cell_data_dict setObject:self.tagIdArr forKey:@"活动标签ID"];
+                [subject sendNext:self.cell_data_dict];
+            }
+            else
+            {
+                [subject sendNext:@0];
+            }
+        }
     }];
     return subject;
 }

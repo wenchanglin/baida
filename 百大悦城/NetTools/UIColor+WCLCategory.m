@@ -30,4 +30,5 @@
     [scanner scanHexInt:&hexint];
     return [UIColor colorWithHex:hexint alpha:opacity];
 }
+
 @end

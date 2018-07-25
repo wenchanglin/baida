@@ -9,5 +9,5 @@
 #import "ViewController.h"
 
 @interface WCLActivityingVC : ViewController
-
+@property(nonatomic,strong)NSString * stringID;
 @end

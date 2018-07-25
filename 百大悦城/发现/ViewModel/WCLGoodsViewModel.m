@@ -28,18 +28,18 @@
     RACReplaySubject * subject = [RACReplaySubject subject];
     [SVProgressHUD showWithStatus:@"加载中"];
     NSMutableDictionary * params = [NSMutableDictionary dictionary];
-    params[@"organizeId"] = @"2";//responseObject[@"data"][@"organizeId"];
     params[@"commodityType"] = @"SPECIAL";
     [[wclNetTool sharedTools]request:POST urlString:URL_Find_GoodsList parameters:params finished:^(id responseObject, NSError *error) {
-        [SVProgressHUD dismissWithDelay:1];
-          if ([responseObject[@"data"] count]>0) {
-        self.goodsArr = [WCLGoodsModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
-        [self.cell_data_dict setObject:self.goodsArr forKey:@"人气"];
-        [subject sendNext:self.cell_data_dict];
-          }else
-          {
-              [SVProgressHUD showErrorWithStatus:@"未获取到数据，请重试"];
-          }
+        [SVProgressHUD dismiss];
+        if ([responseObject[@"data"] count]>0) {
+            self.goodsArr = [WCLGoodsModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+            [self.cell_data_dict setObject:self.goodsArr forKey:@"人气"];
+            [subject sendNext:self.cell_data_dict];
+        }
+        else
+        {
+//            [SVProgressHUD showErrorWithStatus:@"未获取到数据，请重试"];
+        }
     }];
     return subject;
 }
@@ -48,11 +48,10 @@
     RACReplaySubject * subject = [RACReplaySubject subject];
     [SVProgressHUD showWithStatus:@"加载中"];
     NSMutableDictionary * params = [NSMutableDictionary dictionary];
-    params[@"organizeId"] = @"2";//responseObject[@"data"][@"organizeId"];
     params[@"commodityType"] = @"FIRSTLOOK";
     [[wclNetTool sharedTools]request:POST urlString:URL_Find_GoodsList parameters:params finished:^(id responseObject, NSError *error) {
-        [SVProgressHUD dismissWithDelay:1];
-//        WCLLog(@"新品:%@",responseObject[@"data"]);
+        [SVProgressHUD dismiss];
+        WCLLog(@"新品:%@",responseObject[@"data"]);
         if ([responseObject[@"data"] count]>0) {
             self.goodsNewArr = [WCLGoodsModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
             [self.cell_data_dict setObject:self.goodsNewArr forKey:@"新品"];
@@ -60,7 +59,7 @@
         }
         else
         {
-            [SVProgressHUD showErrorWithStatus:@"未获取到数据，请重试"];
+//            [SVProgressHUD showErrorWithStatus:@"未获取到数据，请重试"];
             
         }
     }];

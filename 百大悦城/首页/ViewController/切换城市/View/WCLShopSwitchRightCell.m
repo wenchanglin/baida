@@ -18,13 +18,19 @@
     return self;
 }
 -(void)createUI{
+    UIView *view2 = [[UIView alloc] init];
+    view2.backgroundColor = [UIColor clearColor];
+    view2.frame = CGRectMake(15, 15, 244, 122);
+    view2.layer.shadowOpacity = 0.4;
+    view2.layer.shadowOffset = CGSizeMake(0, 4);
+    [self.contentView addSubview:view2];
     _backImgView = [UIImageView new];
     _backImgView.layer.cornerRadius=6;
     _backImgView.layer.masksToBounds=YES;
-    [self.contentView addSubview:_backImgView];
+    [view2 addSubview:_backImgView];
     [_backImgView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.left.mas_equalTo(15);
-        make.right.mas_equalTo(-16);
+        make.top.left.mas_equalTo(0);
+        make.right.mas_equalTo(IsiPhoneX?-16:-52);
         make.height.mas_equalTo(122);
     }];
     _nameLabel = [UILabel new];
@@ -47,7 +53,8 @@
 -(void)setModels:(WCLShopSwitchListModel *)models
 {
     _models = models;
-    [_backImgView sd_setImageWithURL:[NSURL URLWithString:models.organizePicturePath]];
+//    WCLLog(@"%@",models.organizePicturePath);
+    [_backImgView sd_setImageWithURL:[NSURL URLWithString:models.organizePicturePath] placeholderImage:[UIImage imageNamed:@"icon_big_placeholder"] options:SDWebImageAllowInvalidSSLCertificates];
     _nameLabel.text = models.organizeName;
     _subNameLabel.text = models.organizeAddress;
 }

@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 @interface WCLShopIndustryModel:NSObject
-@property(nonatomic,assign)NSInteger industryId;
+@property(nonatomic,strong)NSString* industryId;
 @property(nonatomic,strong)NSString *industryName;
 @property(nonatomic,assign)NSInteger organizeId;
 @property(nonatomic,assign)NSInteger organizeIndustryId;
@@ -22,7 +22,7 @@
 @property(nonatomic,assign)NSInteger creatorId;
 @property(nonatomic,strong)NSString *floorDesc;
 @property(nonatomic,strong)NSString *floorIcon;
-@property(nonatomic,assign)NSInteger floorId;
+@property(nonatomic,strong)NSString* floorId;
 @property(nonatomic,strong)NSString *floorName;
 @property(nonatomic,strong)NSString *floorPicturePath;
 @property(nonatomic,strong)NSString *isDelete;
@@ -33,7 +33,7 @@
 @property(nonatomic,assign)NSInteger showSerial;
 @end
 @interface WCLFindShopModel : NSObject
-@property(nonatomic,assign)NSInteger berthNo;
+@property(nonatomic,strong)NSString* berthNo;
 @property(nonatomic,assign)NSInteger creatorId;
 @property(nonatomic,assign)NSInteger clickNum;
 @property(nonatomic,assign)NSInteger organizeId;

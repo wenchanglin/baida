@@ -22,16 +22,16 @@
     }
     return _cell_data_dict;
 }
--(RACSignal *)loginSignal
-{
-    RACReplaySubject * subject = [RACReplaySubject subject];
-    [SVProgressHUD showWithStatus:@"加载中"];
-    NSMutableDictionary * params = [NSMutableDictionary dictionary];
-    params[@"organizeId"] = @"2";//responseObject[@"data"][@"organizeId"];
-    [[wclNetTool sharedTools]request:POST urlString:@"appRequest/appLogin.json" parameters:params finished:^(id     responseObject, NSError *error) {
-          
-      }];
-    return subject;
-}
+//-(RACSignal *)loginSignal
+//{
+//    RACReplaySubject * subject = [RACReplaySubject subject];
+//    [SVProgressHUD showWithStatus:@"加载中"];
+//    NSMutableDictionary * params = [NSMutableDictionary dictionary];
+//    params[@"organizeId"] = @"2";//responseObject[@"data"][@"organizeId"];
+//    [[wclNetTool sharedTools]request:POST urlString:@"appRequest/appLogin.json" parameters:params finished:^(id     responseObject, NSError *error) {
+//          
+//      }];
+//    return subject;
+//}
 
 @end

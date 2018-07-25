@@ -9,6 +9,7 @@
 #import "WCLHomeViewController.h"
 #import "WCLHomeUIService.h"
 #import "WCLHomeViewModel.h"
+#import "YBLUpdateVersionView.h"
 
 @interface WCLHomeViewController ()
 @property (nonatomic, strong) WCLHomeUIService *homeUIService;//首页UI 服务
@@ -19,32 +20,29 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:false];
-    //    [self.homeUIService stopTimer];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-//    if(self.homeUIService.contentY > NAVBAR_CHANGE_POINT) {
-//        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:false];
-//    }else {
-//        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:false];
-//    }
+
 }
 - (void)viewDidLoad {
-    [super viewDidLoad];
-    self.title = @"首页";
-    
- 
-//    self.navigationController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"定位" style:UIBarButtonItemStylePlain target:self action:@selector(leftclick:)];
+    [super viewDidLoad];    
     self.viewModel = [[WCLHomeViewModel alloc] init];
     self.homeUIService = [[WCLHomeUIService alloc] initWithVC:self ViewModel:self.viewModel];
     [[[NSNotificationCenter defaultCenter]rac_addObserverForName:App_Notification_Version object:nil] subscribeNext:^(NSNotification * _Nullable x) {
         NSDictionary *userInfo = [x userInfo];
-        WCLLog(@"%@",userInfo);
+        YBLUpdateReaseNotModel *notModel = userInfo[@"model"];
+        [YBLUpdateVersionView showUpdateVersionViewWithModel:notModel
+        doneBlock:^{
+                NSURL *url = [NSURL URLWithString:AppOfAppstore_URL];
+                [YBLMethodTools OpenURL:url];
+        }];
     }];
    
     
 }
+
 -(void)leftclick:(UIBarButtonItem*)leftitem
 {
     WCLLog(@"你点击了我");
@@ -60,6 +58,7 @@
     //                                               }];
     
 }
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
