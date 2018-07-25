@@ -103,6 +103,8 @@
 		9E055A1221084B94000DF17A /* WCLMineWaitPickGoodsDetailService.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E055A1121084B94000DF17A /* WCLMineWaitPickGoodsDetailService.m */; };
 		9E055A1521084C43000DF17A /* WCLMineWaitPickGoodsDetailViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E055A1421084C43000DF17A /* WCLMineWaitPickGoodsDetailViewModel.m */; };
 		9E055A1821084FB2000DF17A /* WCLWaitPickGoodsOneCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E055A1721084FB2000DF17A /* WCLWaitPickGoodsOneCell.m */; };
+		9E055A1B210857A8000DF17A /* WCLWaitPickGoodsTwoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E055A1A210857A8000DF17A /* WCLWaitPickGoodsTwoCell.m */; };
+		9E055A1E210876EC000DF17A /* WCLWaitPickGoodsThirdCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E055A1D210876EC000DF17A /* WCLWaitPickGoodsThirdCell.m */; };
 		9E05709220B9741900CAA94B /* WCLCouPonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E05709120B9741900CAA94B /* WCLCouPonViewController.m */; };
 		9E05709620B974BE00CAA94B /* WCLCouPonViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E05709520B974BE00CAA94B /* WCLCouPonViewModel.m */; };
 		9E05709920B974F400CAA94B /* WCLCouPonService.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E05709820B974F400CAA94B /* WCLCouPonService.m */; };
@@ -671,6 +673,10 @@
 		9E055A1421084C43000DF17A /* WCLMineWaitPickGoodsDetailViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WCLMineWaitPickGoodsDetailViewModel.m; sourceTree = "<group>"; };
 		9E055A1621084FB2000DF17A /* WCLWaitPickGoodsOneCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WCLWaitPickGoodsOneCell.h; sourceTree = "<group>"; };
 		9E055A1721084FB2000DF17A /* WCLWaitPickGoodsOneCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WCLWaitPickGoodsOneCell.m; sourceTree = "<group>"; };
+		9E055A19210857A7000DF17A /* WCLWaitPickGoodsTwoCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WCLWaitPickGoodsTwoCell.h; sourceTree = "<group>"; };
+		9E055A1A210857A8000DF17A /* WCLWaitPickGoodsTwoCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WCLWaitPickGoodsTwoCell.m; sourceTree = "<group>"; };
+		9E055A1C210876EC000DF17A /* WCLWaitPickGoodsThirdCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WCLWaitPickGoodsThirdCell.h; sourceTree = "<group>"; };
+		9E055A1D210876EC000DF17A /* WCLWaitPickGoodsThirdCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WCLWaitPickGoodsThirdCell.m; sourceTree = "<group>"; };
 		9E05709020B9741900CAA94B /* WCLCouPonViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WCLCouPonViewController.h; sourceTree = "<group>"; };
 		9E05709120B9741900CAA94B /* WCLCouPonViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WCLCouPonViewController.m; sourceTree = "<group>"; };
 		9E05709420B974BE00CAA94B /* WCLCouPonViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WCLCouPonViewModel.h; sourceTree = "<group>"; };
@@ -2864,6 +2870,10 @@
 				9E055A0E210840CE000DF17A /* WCLWaitPickGoodsDetailTableView.m */,
 				9E055A1621084FB2000DF17A /* WCLWaitPickGoodsOneCell.h */,
 				9E055A1721084FB2000DF17A /* WCLWaitPickGoodsOneCell.m */,
+				9E055A19210857A7000DF17A /* WCLWaitPickGoodsTwoCell.h */,
+				9E055A1A210857A8000DF17A /* WCLWaitPickGoodsTwoCell.m */,
+				9E055A1C210876EC000DF17A /* WCLWaitPickGoodsThirdCell.h */,
+				9E055A1D210876EC000DF17A /* WCLWaitPickGoodsThirdCell.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -3625,6 +3635,7 @@
 				9E042F6A20B3F0D800C22689 /* WCLActivityDetailUIService.m in Sources */,
 				9E055A0921081A3A000DF17A /* WCLWaitPickGoodsCell.m in Sources */,
 				9E43B5BA20FF3618004D2D46 /* WCLPaySuccessVC.m in Sources */,
+				9E055A1B210857A8000DF17A /* WCLWaitPickGoodsTwoCell.m in Sources */,
 				9E3C78C420C9147600E1BEF0 /* WCLTicketUseViewController.m in Sources */,
 				9EDA1FC520B29D2800BA8692 /* WCLActivityModel.m in Sources */,
 				9E04C3E520C1542B00FB1A42 /* WCLYuFuCardCell.m in Sources */,
@@ -3692,6 +3703,7 @@
 				9E3C78D620C9268700E1BEF0 /* WCLMineTicketCell.m in Sources */,
 				9E07978D20EC96CE005BF3CA /* WCLPointRequestVC.m in Sources */,
 				9E0BDAEA20C5419F000C9FBB /* WCLPointsDetailCell.m in Sources */,
+				9E055A1E210876EC000DF17A /* WCLWaitPickGoodsThirdCell.m in Sources */,
 				9EFC849F20D0E4870043C796 /* WCLMineWaitExchangeViewModel.m in Sources */,
 				9E0BDADD20C519F0000C9FBB /* WCLPointsDetailVC.m in Sources */,
 				9E3A624720F85B3E006D3A08 /* WCLSaleDetailTableView.m in Sources */,
